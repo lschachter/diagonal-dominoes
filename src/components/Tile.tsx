@@ -1,6 +1,6 @@
 import classNames from "classnames";
 
-import "./Tile.css";
+import "./css/Tile.css";
 
 type Props = {
   color_1: string;

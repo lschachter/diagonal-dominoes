@@ -1,4 +1,4 @@
-import "./TileSet.css";
+import "./css/TileSet.css";
 import Tile from "./Tile";
 
 export default function TileSet() {
