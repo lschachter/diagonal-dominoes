@@ -1,41 +1,47 @@
+import classNames from "classnames";
 import "./css/TileSet.css";
-import Tile from "./Tile";
+import TileComponent from "./Tile";
+import type { Player, Tile } from "../types";
 
-export default function TileSet() {
-  const numTiles = 5;
+type Props = {
+  player: Player;
+  tiles: Tile[];
+};
 
-  const colors = ["green", "blue", "red", "yellow"];
-  const colorCombos = [
-    [0, 1],
-    [0, 2],
-    [0, 3],
-    [1, 2],
-    [1, 3],
-    [2, 3],
-    [0, 0],
-    [1, 1],
-    [2, 2],
-    [3, 3],
-  ];
+export default function TileSet({ player, tiles }: Props) {
+  const baseId: string = `player-${player.id}`;
 
-  let comboIndex, i, color_1, color_2;
+  const float: string = player.id === 1 ? "left" : "right";
+  const baseButtonId: string = `${baseId}-button`;
 
-  let tiles = [];
+  let placeTileButtonId: string = `${baseButtonId}-place-tile`;
+  let switchTileButtonId: string = `${baseButtonId}-switch-tile`;
 
-  for (i = 1; i <= numTiles; i++) {
-    comboIndex = +Math.floor(Math.random() * colorCombos.length);
-    color_1 = colors[colorCombos[comboIndex][0]];
-    color_2 = colors[colorCombos[comboIndex][1]];
-    colorCombos.splice(comboIndex, 1);
-    tiles.push(
-      <Tile
-        key={i}
-        color_1={color_1}
-        color_2={color_2}
-        onClick={() => {}}
-      ></Tile>
-    );
-  }
-
-  return <div className="tile-set">{tiles}</div>;
+  return (
+    <div className={classNames("tile-functionality", float)}>
+      <h3>Player {player.id}</h3>
+      <div className="tile-set">
+        {tiles.map((tile, index) => {
+          let i = index + 1;
+          let buttonId: string = `${baseButtonId}-${i.toString()}`;
+          return (
+            <div>
+              <TileComponent key={i} tile={tile}></TileComponent>
+              {!player.isHuman ? "" : <button id={buttonId}>Select</button>}
+            </div>
+          );
+        })}
+      </div>
+      {!player.isHuman ? (
+        ""
+      ) : (
+        <div className="placement-buttons">
+          <div>
+            <button id={switchTileButtonId}>Switch</button>
+            <button id={placeTileButtonId}>Place</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

@@ -2,23 +2,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 120px;
+  width: 122px;
   height: 60px;
   left: 0;
   top: 0;
   background-color: rgba(0, 0, 0, 0.6);
+  margin: 5px 0px;
 }
 
 .tile div {
-  width: 45%;
+  width: 100%;
   height: 85%;
-}
-.left {
-  float: left;
-}
-
-.right {
-  float: right;
+  margin: 5px;
 }
 
 .yellow {

@@ -1,18 +1,16 @@
-import classNames from "classnames";
-
 import "./css/Tile.css";
 
+import type { Tile } from "../types";
+
 type Props = {
-  color_1: string;
-  color_2: string;
-  onClick(): void;
+  tile: Tile;
 };
 
-export default function Tile({ color_1, color_2, onClick }: Props) {
+export default function TileComponent({ tile }: Props) {
   return (
-    <div className="tile" onClick={onClick}>
-      <div className={classNames("left", color_1)}></div>
-      <div className={classNames("right", color_2)}></div>
+    <div className="tile" id={tile.id}>
+      <div className={tile.color_1}></div>
+      <div className={tile.color_2}></div>
     </div>
   );
 }
