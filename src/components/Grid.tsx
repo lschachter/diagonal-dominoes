@@ -18,7 +18,13 @@ export default function Grid() {
         return (
           <div className="grid-row" key={index}>
             {row.map((squareId) => {
-              return <div className="square" key={squareId}></div>;
+              return (
+                <div
+                  className="square"
+                  key={squareId}
+                  id={squareId.toString()}
+                ></div>
+              );
             })}
           </div>
         );
