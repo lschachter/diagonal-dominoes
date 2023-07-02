@@ -1,6 +1,6 @@
 import type { Move, Player, PlayerCollection, Tile, TreeNode } from "./types";
 
-export function createPlayerCollection(player: Player) {
+export function createPlayerTiles(player: Player) {
   const numTiles: number = 5;
   const baseId: string = `player-${player.id}`;
 
@@ -65,17 +65,43 @@ export function createPlayerCollection(player: Player) {
   return tiles;
 }
 
+export function flipTile(tile: Tile) {
+  console.log("in flip");
+  const tempColor = tile.color_1;
+  tile.color_1 = tile.color_2;
+  tile.color_2 = tempColor;
+  console.log(tile);
+}
+
 export function handlePlayerMove(
   move: Move,
   playerCollection: PlayerCollection
 ) {
   if (move.buttonType === "Flip") {
-    const tempColor = move.tile.color_1;
-    move.tile.color_1 = move.tile.color_2;
-    move.tile.color_2 = tempColor;
   } else {
     console.log("place the tile");
   }
 }
 
-export function onTileClick() {}
+export function computerMove(node: TreeNode) {
+  if (node.children.length === 0) {
+    console.log("player won, comp has no moves!");
+    return null;
+  }
+  let childrenByPay: Map<number, TreeNode> = new Map();
+  for (let child of node.children) {
+    childrenByPay.set(child.payOff, child);
+  }
+  console.log(childrenByPay);
+
+  let nextNode: TreeNode = [...childrenByPay.entries()].reduce((a, b) =>
+    a[0] > b[0] ? a : b
+  )[1];
+  console.log(nextNode);
+  if (nextNode.children.length === 0) {
+    console.log("comp won, player has no moves!");
+    return null;
+  }
+  // reactivate user buttons
+  return nextNode;
+}

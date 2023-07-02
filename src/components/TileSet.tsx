@@ -1,40 +1,75 @@
 import classNames from "classnames";
 import "./css/TileSet.css";
 import TileComponent from "./TileComponent";
-import type { Player, Tile } from "../types";
+import type { PlayerCollection, Tile, Player } from "../types";
+import { useState } from "react";
 
 type Props = {
-  player: Player;
-  tiles: Tile[];
+  playerCollection: PlayerCollection;
+  onPlaceClick(tile: Tile): void;
+  onFlipClick(collection: PlayerCollection, index: number): void;
 };
 
-export default function TileSet({ player, tiles }: Props) {
-  const baseId: string = `player-${player.id}`;
-  const float: string = player.id === 1 ? "left" : "right";
+export default function TileSet({
+  playerCollection,
+  onPlaceClick,
+  onFlipClick,
+}: Props) {
+  const [disabled, setDisabled] = useState(true);
+  const [tileIndex, setTileIndex] = useState(0);
+
+  const baseId: string = `player-${playerCollection.player.id}`;
+  const float: string = playerCollection.player.id === 1 ? "left" : "right";
 
   let placeTileButtonId: string = `${baseId}-place-tile`;
   let flipTileButtonId: string = `${baseId}-switch-tile`;
   let placementButtonsId: string = `${baseId}-placement-buttons`;
 
+  function onClick(tile: Tile, index: number) {
+    setDisabled(false);
+    setTileIndex(index);
+  }
+
+  let placeTileButton = (
+    <button
+      id={placeTileButtonId}
+      disabled={disabled}
+      onClick={() => onPlaceClick(playerCollection.tiles[tileIndex])}
+    >
+      Place
+    </button>
+  );
+  let flipTileButton = (
+    <button
+      id={flipTileButtonId}
+      disabled={disabled}
+      onClick={() => onFlipClick(playerCollection, tileIndex)}
+    >
+      Flip
+    </button>
+  );
+
   return (
     <div className={classNames("tile-functionality", float)}>
-      <h3>Player {player.id}</h3>
+      <h3>Player {playerCollection.player.id}</h3>
       <div className="tile-set">
-        {tiles.map((tile, index) => {
-          return <TileComponent key={index + 1} tile={tile}></TileComponent>;
+        {playerCollection.tiles.map((tile, index) => {
+          return (
+            <TileComponent
+              onClick={() => onClick(tile, index)} // might have to send index of which tile to change in list
+              key={index + 1}
+              tile={tile}
+            ></TileComponent>
+          );
         })}
       </div>
-      {!player.isHuman ? (
+      {!playerCollection.player.isHuman ? (
         ""
       ) : (
         <div className="placement-buttons" id={placementButtonsId}>
           <div>
-            <button id={flipTileButtonId} disabled>
-              Flip
-            </button>
-            <button id={placeTileButtonId} disabled>
-              Place
-            </button>
+            {flipTileButton}
+            {placeTileButton}
           </div>
         </div>
       )}
