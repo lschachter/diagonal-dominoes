@@ -2,6 +2,7 @@ import "./App.css";
 
 import TileSet from "./components/TileSet";
 import Grid from "./components/Grid";
+import Modal from "./components/Modal";
 import { computerMove, createPlayerTiles, flipTile } from "./utils";
 import GameTree from "./GameTree";
 
@@ -125,6 +126,16 @@ export default function App() {
         ></TileSet>
         <Grid></Grid>
       </main>
+      {game.status.isComplete && (
+        <Modal
+          message={
+            game.status.winner
+              ? `Player ${game.status.winner.id} wins!`
+              : "Tie!"
+          }
+          onClick={() => {}}
+        />
+      )}
     </div>
   );
 }
