@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import "./css/TileSet.css";
 import TileComponent from "./TileComponent";
-import type { PlayerCollection, Tile, Player } from "../types";
+import type { PlayerCollection, Tile, TreeNode } from "../types";
 import { useState } from "react";
 
 type Props = {
@@ -25,7 +25,7 @@ export default function TileSet({
   let flipTileButtonId: string = `${baseId}-switch-tile`;
   let placementButtonsId: string = `${baseId}-placement-buttons`;
 
-  function onClick(tile: Tile, index: number) {
+  function onTileClick(index: number) {
     setDisabled(false);
     setTileIndex(index);
   }
@@ -56,7 +56,7 @@ export default function TileSet({
         {playerCollection.tiles.map((tile, index) => {
           return (
             <TileComponent
-              onClick={() => onClick(tile, index)} // might have to send index of which tile to change in list
+              onClick={() => onTileClick(index)}
               key={index + 1}
               tile={tile}
             ></TileComponent>

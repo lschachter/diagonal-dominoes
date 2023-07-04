@@ -17,11 +17,11 @@ export default function GameTree(root: TreeNode, players: PlayerCollection[]) {
       // If the tile doesn't have the needed color or is in use, skip it
       if (
         (color !== tile.color_1 && color !== tile.color_2) ||
-        tile.useState !== 0
+        tile.isAvailable !== true
       ) {
         continue;
       }
-      tile.useState = 1;
+      tile.isAvailable = false;
       let newNode: TreeNode = {
         tile,
         children: [],
@@ -35,7 +35,7 @@ export default function GameTree(root: TreeNode, players: PlayerCollection[]) {
 
       nextMove(players[newPlayerId], depth + 1, newNode, newColor);
 
-      tile.useState = 0;
+      tile.isAvailable = true;
     }
     setPayoffAtNode(node, depth - 1);
   }

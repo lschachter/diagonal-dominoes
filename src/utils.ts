@@ -31,7 +31,7 @@ export function createPlayerTiles(player: Player) {
 
     id = `${baseId}-tile-${i.toString()}`;
 
-    tiles.push({ color_1, color_2, id, useState: 0 });
+    tiles.push({ color_1, color_2, id, isAvailable: true });
   }
 
   // TESTER CODE
@@ -58,7 +58,7 @@ export function createPlayerTiles(player: Player) {
   //   id = `${baseId}-tile-${i.toString()}`;
   //   color_1 = colors[0];
   //   color_2 = colors[1];
-  //   tiles.push({ color_1, color_2, id, useState: 0 });
+  //   tiles.push({ color_1, color_2, id, isAvailable: true });
   // });
   // END TESTER CODE
 
@@ -66,40 +66,21 @@ export function createPlayerTiles(player: Player) {
 }
 
 export function flipTile(tile: Tile) {
-  console.log("in flip");
   const tempColor = tile.color_1;
   tile.color_1 = tile.color_2;
   tile.color_2 = tempColor;
-  console.log(tile);
-}
-
-export function handlePlayerMove(
-  move: Move,
-  playerCollection: PlayerCollection
-) {
-  if (move.buttonType === "Flip") {
-  } else {
-    console.log("place the tile");
-  }
 }
 
 export function computerMove(node: TreeNode) {
-  if (node.children.length === 0) {
-    console.log("player won, comp has no moves!");
-    return null;
-  }
   let childrenByPay: Map<number, TreeNode> = new Map();
   for (let child of node.children) {
     childrenByPay.set(child.payOff, child);
   }
-  console.log(childrenByPay);
 
   let nextNode: TreeNode = [...childrenByPay.entries()].reduce((a, b) =>
     a[0] > b[0] ? a : b
   )[1];
-  console.log(nextNode);
   if (nextNode.children.length === 0) {
-    console.log("comp won, player has no moves!");
     return null;
   }
   // reactivate user buttons

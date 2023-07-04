@@ -7,7 +7,7 @@ export type Tile = {
   color_1: string;
   color_2: string;
   id: string;
-  useState: 0 | 1 | 2; // 0: not in use; 1: in game tree iteration; 2: placed on board
+  isAvailable: boolean;
 };
 
 export type PlayerCollection = {
@@ -23,9 +23,7 @@ export type TreeNode = {
 
 export type Move = {
   player: Player;
-  id: number;
-  tile: Tile;
-  buttonType: string; // "Flip" to flip tile orientation or "Place" to place tile
+  node: TreeNode;
 };
 
 export type GameStatus = {

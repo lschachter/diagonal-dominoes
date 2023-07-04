@@ -9,16 +9,18 @@ import type { Game, Player, PlayerCollection, Tile, TreeNode } from "./types";
 import { useState } from "react";
 
 export default function App() {
-  const [tree, setTree] = useState(null as any);
-  const [player1Tiles, setPlayer1Tiles] = useState(
-    createPlayerTiles({ id: 1, isHuman: true })
-  );
-  const [player2Tiles, setPlayer2Tiles] = useState(
-    createPlayerTiles({ id: 2, isHuman: false })
-  );
-
   const player1: Player = { id: 1, isHuman: true };
   const player2: Player = { id: 2, isHuman: false };
+
+  const [tree, setTree] = useState(null as any);
+  const [player1Tiles, setPlayer1Tiles] = useState(createPlayerTiles(player1));
+  const [player2Tiles, setPlayer2Tiles] = useState(createPlayerTiles(player2));
+  const [game, setGame] = useState({
+    moves: [],
+    currentPlayer: player1,
+    nextPlayer: player2,
+    status: { isComplete: false, winner: null },
+  } as Game);
 
   const player1Collection: PlayerCollection = {
     player: player1,
@@ -30,16 +32,8 @@ export default function App() {
     tiles: player2Tiles,
   };
 
-  const game: Game = {
-    moves: [],
-    currentPlayer: player1,
-    nextPlayer: player2,
-    status: { isComplete: false, winner: null },
-  };
-
   function handlePlaceClick(tile: Tile) {
-    tile.useState = 2;
-    console.log(tile);
+    tile.isAvailable = false;
     let node: TreeNode;
 
     if (tree === null) {
@@ -48,13 +42,59 @@ export default function App() {
         children: [],
         payOff: 0,
       };
-      console.log(node);
       const tree = GameTree(node, [player1Collection, player2Collection]);
       setTree(tree);
-      computerMove(node);
     } else {
+      const parent: TreeNode = game.moves[game.moves.length - 1].node;
+      const foundNode = parent.children.find((child) => child.tile === tile);
+      if (foundNode !== undefined) {
+        node = foundNode;
+      } else {
+        return;
+      }
     }
-    // computerMove(node);
+    setGame((prev: Game) => {
+      const gameClone = structuredClone(prev);
+      gameClone.moves.push({
+        player: player1,
+        node: node,
+      });
+      gameClone.currentPlayer = player2;
+      gameClone.nextPlayer = player1;
+      return gameClone;
+    });
+    if (node.children.length === 0) {
+      setGame((prev: Game) => {
+        const gameClone = structuredClone(prev);
+        gameClone.status.isComplete = true;
+        gameClone.status.winner = player1;
+        return gameClone;
+      });
+      console.log("player 1 wins!");
+      return;
+    }
+    const computerNode: TreeNode | null = computerMove(node);
+    if (computerNode === null) {
+      setGame((prev: Game) => {
+        const gameClone = structuredClone(prev);
+        gameClone.status.isComplete = true;
+        gameClone.status.winner = player2;
+        return gameClone;
+      });
+      console.log("player 2 wins!");
+    } else {
+      computerNode.tile.isAvailable = false;
+      setGame((prev: Game) => {
+        const gameClone = structuredClone(prev);
+        gameClone.moves.push({
+          player: player2,
+          node: computerNode,
+        });
+        gameClone.currentPlayer = player1;
+        gameClone.nextPlayer = player2;
+        return gameClone;
+      });
+    }
   }
 
   function handleFlipClick(playerCollection: PlayerCollection, index: number) {
@@ -64,7 +104,6 @@ export default function App() {
     } else {
       setPlayer2Tiles([...playerCollection.tiles]);
     }
-    console.log(playerCollection.tiles);
   }
 
   return (
