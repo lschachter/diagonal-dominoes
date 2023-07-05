@@ -81,9 +81,5 @@ export function computerMove(node: TreeNode) {
     a[0] > b[0] ? a : b
   )[1];
   nextNode.tile.isAvailable = false;
-  if (nextNode.children.length === 0) {
-    return null;
-  }
-  // reactivate user buttons
   return nextNode;
 }

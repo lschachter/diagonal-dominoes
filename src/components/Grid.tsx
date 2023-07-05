@@ -36,13 +36,11 @@ export default function Grid({ moves }: Props) {
               }
               return (
                 <div className="square" key={squareId} id={squareId.toString()}>
-                  {tile !== null ? (
+                  {tile !== null && (
                     <TileComponent
                       onClick={() => {}}
                       tile={tile}
                     ></TileComponent>
-                  ) : (
-                    ""
                   )}
                 </div>
               );

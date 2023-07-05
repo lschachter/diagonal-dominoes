@@ -48,11 +48,21 @@ export default function App() {
     } else {
       const parent: TreeNode = game.moves[game.moves.length - 1].node;
       const foundNode = parent.children.find((child) => child.tile === tile);
-      if (foundNode !== undefined) {
-        node = foundNode;
-      } else {
+      if (foundNode === undefined) {
+        console.log("ERROR: PICK A PLAYABLE TILE");
         return;
       }
+      node = foundNode;
+      if (parent.tile.color_2 !== node.tile.color_1) {
+        flipTile(node.tile);
+        setPlayer1Tiles([...player1Collection.tiles]);
+      }
+    }
+
+    // check for winner
+    let winner: Player | null = null;
+    if (node.children.length === 0) {
+      winner = player1;
     }
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
@@ -62,40 +72,37 @@ export default function App() {
       });
       gameClone.currentPlayer = player2;
       gameClone.nextPlayer = player1;
+      gameClone.status.isComplete = winner ? true : false;
+      gameClone.status.winner = winner;
       return gameClone;
     });
-    if (node.children.length === 0) {
-      setGame((prev: Game) => {
-        const gameClone = structuredClone(prev);
-        gameClone.status.isComplete = true;
-        gameClone.status.winner = player1;
-        return gameClone;
-      });
+    if (winner) {
       return;
     }
-    const computerNode: TreeNode | null = computerMove(node);
-    if (computerNode === null) {
-      let winner: Player | null;
-      // If both players played all their tiles, it's a tie
-      winner = game.moves.length === 10 ? null : player2;
-      setGame((prev: Game) => {
-        const gameClone = structuredClone(prev);
-        gameClone.status.isComplete = true;
-        gameClone.status.winner = winner;
-        return gameClone;
-      });
-    } else {
-      setGame((prev: Game) => {
-        const gameClone = structuredClone(prev);
-        gameClone.moves.push({
-          player: player2,
-          node: computerNode,
-        });
-        gameClone.currentPlayer = player1;
-        gameClone.nextPlayer = player2;
-        return gameClone;
-      });
+
+    const computerNode: TreeNode = computerMove(node);
+    if (node.tile.color_2 !== computerNode.tile.color_1) {
+      flipTile(computerNode.tile);
+      setPlayer2Tiles([...player2Collection.tiles]);
     }
+    winner =
+      computerNode.children.length !== 0 || game.moves.length === 10
+        ? null
+        : player2;
+    setGame((prev: Game) => {
+      const gameClone = structuredClone(prev);
+
+      gameClone.moves.push({
+        player: player2,
+        node: computerNode,
+      });
+      gameClone.currentPlayer = player1;
+      gameClone.nextPlayer = player2;
+
+      gameClone.status.isComplete = computerNode.children.length === 0;
+      gameClone.status.winner = winner;
+      return gameClone;
+    });
   }
 
   function resetGame() {
@@ -150,7 +157,7 @@ export default function App() {
               ? `Player ${game.status.winner.id} wins!`
               : "Tie!"
           }
-          label={game.status.winner ? "Play Again" : "Play"}
+          label={game.status.isComplete ? "Play Again" : "Play"}
           onClick={() => resetGame()}
         />
       )}
