@@ -42,10 +42,13 @@ export default function GameTree(root: TreeNode, players: PlayerCollection[]) {
 
   function setPayoffAtNode(node: TreeNode, depth: number) {
     if (node.children.length === 0) {
-      // If it's a leaf node, set the payoff as user win (0) or loss (100)
-      if (depth === maxDepth || depth % 2 === 0) {
+      // If it's a leaf node, set the payoff as comp win (100), loss (0), or tie (50)
+      if (depth % 2 === 0) {
         node.payOff = 0;
+      } else if (depth === maxDepth) {
+        node.payOff = 50;
       } else {
+        // Prioritize faster wins
         node.payOff = 100 * (maxDepth - depth);
       }
       return;
