@@ -9,7 +9,12 @@ type Props = {
 
 export default function TileComponent({ tile, onClick }: Props) {
   return (
-    <button onClick={onClick} className="tile" id={tile.id}>
+    <button
+      onClick={onClick}
+      className="tile"
+      id={tile.id}
+      disabled={!tile.isAvailable}
+    >
       <div className={tile.color_1}></div>
       <div className={tile.color_2}></div>
     </button>

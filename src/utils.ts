@@ -1,4 +1,4 @@
-import type { Move, Player, PlayerCollection, Tile, TreeNode } from "./types";
+import type { Player, Tile, TreeNode } from "./types";
 
 export function createPlayerTiles(player: Player) {
   const numTiles: number = 5;

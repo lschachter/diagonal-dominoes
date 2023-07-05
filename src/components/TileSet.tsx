@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import "./css/TileSet.css";
 import TileComponent from "./TileComponent";
-import type { PlayerCollection, Tile, TreeNode } from "../types";
+import type { PlayerCollection, Tile } from "../types";
 import { useState } from "react";
 
 type Props = {
