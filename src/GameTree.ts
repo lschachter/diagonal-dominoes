@@ -4,7 +4,7 @@ export default function GameTree(root: TreeNode, players: PlayerCollection[]) {
   const maxDepth: number = 9;
 
   nextMove(players[1], 1, root, root.tile.color_2);
-  printTree();
+  // printTree();
 
   function nextMove(
     playerCollection: PlayerCollection,

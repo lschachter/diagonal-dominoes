@@ -71,20 +71,20 @@ export default function App() {
         gameClone.status.winner = player1;
         return gameClone;
       });
-      console.log("player 1 wins!");
       return;
     }
     const computerNode: TreeNode | null = computerMove(node);
     if (computerNode === null) {
+      let winner: Player | null;
+      // If both players played all their tiles, it's a tie
+      winner = game.moves.length === 10 ? null : player2;
       setGame((prev: Game) => {
         const gameClone = structuredClone(prev);
         gameClone.status.isComplete = true;
-        gameClone.status.winner = player2;
+        gameClone.status.winner = winner;
         return gameClone;
       });
-      console.log("player 2 wins!");
     } else {
-      computerNode.tile.isAvailable = false;
       setGame((prev: Game) => {
         const gameClone = structuredClone(prev);
         gameClone.moves.push({
@@ -96,6 +96,23 @@ export default function App() {
         return gameClone;
       });
     }
+  }
+
+  function resetGame() {
+    setGame((prev: Game) => {
+      const gameClone = structuredClone(prev);
+
+      game.moves = [];
+      game.currentPlayer = player1;
+      game.nextPlayer = player2;
+      game.status.isComplete = false;
+      game.status.winner = null;
+
+      return gameClone;
+    });
+    setPlayer1Tiles(createPlayerTiles(player1));
+    setPlayer2Tiles(createPlayerTiles(player2));
+    setTree(null);
   }
 
   function handleFlipClick(playerCollection: PlayerCollection, index: number) {
@@ -133,7 +150,8 @@ export default function App() {
               ? `Player ${game.status.winner.id} wins!`
               : "Tie!"
           }
-          onClick={() => {}}
+          label={game.status.winner ? "Play Again" : "Play"}
+          onClick={() => resetGame()}
         />
       )}
     </div>

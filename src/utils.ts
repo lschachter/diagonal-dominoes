@@ -80,6 +80,7 @@ export function computerMove(node: TreeNode) {
   let nextNode: TreeNode = [...childrenByPay.entries()].reduce((a, b) =>
     a[0] > b[0] ? a : b
   )[1];
+  nextNode.tile.isAvailable = false;
   if (nextNode.children.length === 0) {
     return null;
   }

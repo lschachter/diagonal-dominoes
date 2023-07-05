@@ -28,7 +28,7 @@
 
 .modal-contents button {
   padding: 10px;
-  background-color: var(--turquoise);
-  color: #2a4544;
+  background-color: #2a4544;
+  color: white;
   border-radius: 3px;
 }
