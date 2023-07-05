@@ -23,6 +23,8 @@ export default function App() {
     status: { isComplete: false, winner: null },
   } as Game);
 
+  const [showWinModal, setShowWinModal] = useState(false);
+
   const player1Collection: PlayerCollection = {
     player: player1,
     tiles: player1Tiles,
@@ -77,6 +79,7 @@ export default function App() {
       return gameClone;
     });
     if (winner) {
+      setShowWinModal(true);
       return;
     }
 
@@ -103,6 +106,9 @@ export default function App() {
       gameClone.status.winner = winner;
       return gameClone;
     });
+    if (computerNode.children.length === 0) {
+      setShowWinModal(true);
+    }
   }
 
   function resetGame() {
@@ -131,6 +137,10 @@ export default function App() {
     }
   }
 
+  function handleEscapeClick() {
+    setShowWinModal(false);
+  }
+
   return (
     <div className="App">
       <main>
@@ -150,7 +160,7 @@ export default function App() {
         ></TileSet>
         <Grid moves={game.moves}></Grid>
       </main>
-      {game.status.isComplete && (
+      {showWinModal && (
         <Modal
           message={
             game.status.winner
@@ -159,6 +169,7 @@ export default function App() {
           }
           label={game.status.isComplete ? "Play Again" : "Play"}
           onClick={() => resetGame()}
+          onEscapeClick={() => handleEscapeClick()}
         />
       )}
     </div>

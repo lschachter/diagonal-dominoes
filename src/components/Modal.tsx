@@ -6,11 +6,17 @@ type Props = {
   message: string;
   label: string;
   onClick(): void;
+  onEscapeClick(): void;
 };
 
-export default function Modal({ message, label, onClick }: Props) {
+export default function Modal({
+  message,
+  label,
+  onClick,
+  onEscapeClick,
+}: Props) {
   return (
-    <div className="modal">
+    <div className="modal" onClick={onEscapeClick}>
       <div className="modal-contents">
         <p>{message}</p>
         <button onClick={onClick}>{label}</button>
