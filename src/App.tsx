@@ -141,7 +141,7 @@ export default function App() {
             handleFlipClick(collection, index)
           }
         ></TileSet>
-        <Grid></Grid>
+        <Grid moves={game.moves}></Grid>
       </main>
       {game.status.isComplete && (
         <Modal
