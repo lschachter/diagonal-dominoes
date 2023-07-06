@@ -38,7 +38,6 @@ export default function App() {
 
   function handlePlaceClick(tile: Tile) {
     let node: TreeNode;
-    tile.isAvailable = false;
 
     if (tree === null) {
       node = {
@@ -52,7 +51,6 @@ export default function App() {
       const parent: TreeNode = game.moves[game.moves.length - 1].node;
       const foundNode = parent.children.find((child) => child.tile === tile);
       if (foundNode === undefined) {
-        tile.isAvailable = true;
         setShowErrorModal(true);
         return;
       }
@@ -62,6 +60,7 @@ export default function App() {
         setPlayer1Tiles([...player1Collection.tiles]);
       }
     }
+    tile.isAvailable = false;
 
     // check for winner
     let winner: Player | null = null;
