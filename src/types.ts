@@ -34,6 +34,5 @@ export type GameStatus = {
 export type Game = {
   moves: Move[];
   currentPlayer: Player;
-  nextPlayer: Player;
   status: GameStatus;
 };

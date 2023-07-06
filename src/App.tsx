@@ -75,7 +75,6 @@ export default function App() {
         node: node,
       });
       gameClone.currentPlayer = player2;
-      gameClone.nextPlayer = player1;
       gameClone.status.isComplete = winner ? true : false;
       gameClone.status.winner = winner;
       return gameClone;
@@ -102,7 +101,6 @@ export default function App() {
         node: computerNode,
       });
       gameClone.currentPlayer = player1;
-      gameClone.nextPlayer = player2;
 
       gameClone.status.isComplete = computerNode.children.length === 0;
       gameClone.status.winner = winner;
@@ -119,7 +117,6 @@ export default function App() {
 
       game.moves = [];
       game.currentPlayer = player1;
-      game.nextPlayer = player2;
       game.status.isComplete = false;
       game.status.winner = null;
 
