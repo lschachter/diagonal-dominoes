@@ -28,9 +28,6 @@ export default function Grid({ moves }: Props) {
             {row.map((squareId) => {
               let color: string | null = null;
               let moveIndex: number = Math.floor(squareId / 9) - 1;
-              if (squareId === 9 || squareId === 19) {
-                console.log(moveIndex);
-              }
 
               if (
                 squareId > 0 &&
