@@ -19,11 +19,12 @@ export default function App() {
   const [game, setGame] = useState({
     moves: [],
     currentPlayer: player1,
-    nextPlayer: player2,
     status: { isComplete: false, winner: null },
   } as Game);
 
   const [showWinModal, setShowWinModal] = useState(false);
+  const [showInstructionsModal, setShowInstructionsModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const player1Collection: PlayerCollection = {
     player: player1,
@@ -36,8 +37,8 @@ export default function App() {
   };
 
   function handlePlaceClick(tile: Tile) {
-    tile.isAvailable = false;
     let node: TreeNode;
+    tile.isAvailable = false;
 
     if (tree === null) {
       node = {
@@ -51,7 +52,8 @@ export default function App() {
       const parent: TreeNode = game.moves[game.moves.length - 1].node;
       const foundNode = parent.children.find((child) => child.tile === tile);
       if (foundNode === undefined) {
-        console.log("ERROR: PICK A PLAYABLE TILE");
+        tile.isAvailable = true;
+        setShowErrorModal(true);
         return;
       }
       node = foundNode;
@@ -139,11 +141,23 @@ export default function App() {
 
   function handleEscapeClick() {
     setShowWinModal(false);
+    setShowInstructionsModal(false);
+    setShowErrorModal(false);
+  }
+
+  function handleInstructionsClick() {
+    setShowInstructionsModal(true);
   }
 
   return (
     <div className="App">
       <main>
+        <div className="menu">
+          <button onClick={() => resetGame()}>New Game</button>
+          <button onClick={() => handleInstructionsClick()}>
+            Instructions
+          </button>
+        </div>
         <TileSet
           playerCollection={player1Collection}
           onPlaceClick={(tile) => handlePlaceClick(tile)}
@@ -167,8 +181,33 @@ export default function App() {
               ? `Player ${game.status.winner.id} wins!`
               : "Tie!"
           }
-          label={game.status.isComplete ? "Play Again" : "Play"}
+          label="Play Again"
           onClick={() => resetGame()}
+          onEscapeClick={() => handleEscapeClick()}
+        />
+      )}
+      {showInstructionsModal && (
+        <Modal
+          message={
+            "Choose a tile to 'place' at the bottom left corner of the board. \
+            Each player then takes turns placing tiles whose leftmost color \
+            matches the rightmost color of the last tile played. \
+            If you cannot place any more of your tiles, you lose. If you both place \
+            all of your tiles, you tie."
+          }
+          label="Play"
+          onClick={() => handleEscapeClick()}
+          onEscapeClick={() => handleEscapeClick()}
+        />
+      )}
+      {showErrorModal && (
+        <Modal
+          message={
+            "That move is invalid. Choose a tile whose leftmost color corresponds \
+            to the rightmost tile-color on the board."
+          }
+          label="Play"
+          onClick={() => handleEscapeClick()}
           onEscapeClick={() => handleEscapeClick()}
         />
       )}

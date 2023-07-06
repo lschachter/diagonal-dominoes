@@ -55,11 +55,13 @@ export default function TileSet({
       <div className="tile-set">
         {playerCollection.tiles.map((tile, index) => {
           return (
-            <TileComponent
-              onClick={() => onTileClick(index)}
-              key={index + 1}
-              tile={tile}
-            ></TileComponent>
+            tile.isAvailable && (
+              <TileComponent
+                onClick={() => onTileClick(index)}
+                key={index + 1}
+                tile={tile}
+              ></TileComponent>
+            )
           );
         })}
       </div>
