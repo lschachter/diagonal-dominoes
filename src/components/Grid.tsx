@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Move, Tile } from "../types";
 import "./css/Grid.css";
 import TileComponent from "./TileComponent";
+import classNames from "classnames";
 
 type Props = {
   moves: Move[];
@@ -25,23 +26,35 @@ export default function Grid({ moves }: Props) {
         return (
           <div className="grid-row" key={index}>
             {row.map((squareId) => {
-              let tile: Tile | null = null;
+              let color: string | null = null;
               let moveIndex: number = Math.floor(squareId / 9) - 1;
+              if (squareId === 9 || squareId === 19) {
+                console.log(moveIndex);
+              }
+
               if (
                 squareId > 0 &&
                 squareId % 9 === 0 &&
                 moves.length > moveIndex
               ) {
-                tile = moves[moveIndex].node.tile;
+                color = moves[moveIndex].node.tile.color_1;
+              } else if (
+                squareId > 18 &&
+                (squareId - 10) % 9 === 0 &&
+                moves.length >= moveIndex
+              ) {
+                color = moves[moveIndex - 1].node.tile.color_2;
               }
               return (
-                <div className="square" key={squareId} id={squareId.toString()}>
-                  {tile !== null && (
-                    <TileComponent
-                      onClick={() => {}}
-                      tile={tile}
-                    ></TileComponent>
+                <div
+                  className={classNames(
+                    "square",
+                    color !== null ? "placed-tile" : ""
                   )}
+                  key={squareId}
+                  id={squareId.toString()}
+                >
+                  {color && <div className={color}></div>}
                 </div>
               );
             })}

@@ -1,22 +1,24 @@
 import classNames from "classnames";
 import "./css/TileSet.css";
 import TileComponent from "./TileComponent";
-import type { PlayerCollection, Tile } from "../types";
+import type { Player, PlayerCollection, Tile } from "../types";
 import { useState } from "react";
 
 type Props = {
   playerCollection: PlayerCollection;
+  currentPlayer: Player;
   onPlaceClick(tile: Tile): void;
   onFlipClick(collection: PlayerCollection, index: number): void;
 };
 
 export default function TileSet({
   playerCollection,
+  currentPlayer,
   onPlaceClick,
   onFlipClick,
 }: Props) {
   const [disabled, setDisabled] = useState(true);
-  const [tileIndex, setTileIndex] = useState(0);
+  const [tileIndex, setTileIndex] = useState(-1);
 
   const baseId: string = `player-${playerCollection.player.id}`;
   const float: string = playerCollection.player.id === 1 ? "left" : "right";
@@ -60,6 +62,8 @@ export default function TileSet({
                 onClick={() => onTileClick(index)}
                 key={index + 1}
                 tile={tile}
+                isPlayable={currentPlayer.id === playerCollection.player.id}
+                isClicked={tileIndex === index}
               ></TileComponent>
             )
           );

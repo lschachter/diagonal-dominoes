@@ -16,6 +16,20 @@
   margin: 5px;
 }
 
+.placed-tile {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.placed-tile div {
+  width: 85%;
+  height: 85%;
+  margin: 5px;
+}
+
+.highlighted {
+  border-color: white;
+}
+
 .yellow {
   background-color: var(--yellow);
 }

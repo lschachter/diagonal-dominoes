@@ -73,7 +73,7 @@ export default function App() {
         player: player1,
         node: node,
       });
-      gameClone.currentPlayer = player2;
+      //gameClone.currentPlayer = player2;
       gameClone.status.isComplete = winner ? true : false;
       gameClone.status.winner = winner;
       return gameClone;
@@ -89,7 +89,7 @@ export default function App() {
       setPlayer2Tiles([...player2Collection.tiles]);
     }
     winner =
-      computerNode.children.length !== 0 || game.moves.length === 10
+      computerNode.children.length !== 0 || game.moves.length === 9
         ? null
         : player2;
     setGame((prev: Game) => {
@@ -156,6 +156,7 @@ export default function App() {
         </div>
         <TileSet
           playerCollection={player1Collection}
+          currentPlayer={game.currentPlayer}
           onPlaceClick={(tile) => handlePlaceClick(tile)}
           onFlipClick={(collection, index) =>
             handleFlipClick(collection, index)
@@ -163,6 +164,7 @@ export default function App() {
         ></TileSet>
         <TileSet
           playerCollection={player2Collection}
+          currentPlayer={game.currentPlayer}
           onPlaceClick={(tile) => handlePlaceClick(tile)}
           onFlipClick={(collection, index) =>
             handleFlipClick(collection, index)
