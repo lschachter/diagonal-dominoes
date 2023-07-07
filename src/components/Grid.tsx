@@ -1,7 +1,5 @@
-import { useState } from "react";
-import { Move, Tile } from "../types";
+import { Move } from "../types";
 import "./css/Grid.css";
-import TileComponent from "./TileComponent";
 import classNames from "classnames";
 
 type Props = {

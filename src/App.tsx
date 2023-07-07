@@ -88,10 +88,10 @@ export default function App() {
       flipTile(computerNode.tile);
       setPlayer2Tiles([...player2Collection.tiles]);
     }
-    winner =
-      computerNode.children.length !== 0 || game.moves.length === 9
-        ? null
-        : player2;
+    const noMovesLeft = computerNode.children.length === 0;
+    if (game.moves.length < 9 && noMovesLeft) {
+      winner = player2;
+    }
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
 
@@ -101,11 +101,11 @@ export default function App() {
       });
       gameClone.currentPlayer = player1;
 
-      gameClone.status.isComplete = computerNode.children.length === 0;
+      gameClone.status.isComplete = noMovesLeft;
       gameClone.status.winner = winner;
       return gameClone;
     });
-    if (computerNode.children.length === 0) {
+    if (noMovesLeft) {
       setShowWinModal(true);
     }
   }
