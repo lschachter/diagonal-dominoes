@@ -8,6 +8,7 @@ import GameTree from "./GameTree";
 
 import type { Game, Player, PlayerCollection, Tile, TreeNode } from "./types";
 import { useState } from "react";
+import Footer from "./components/Footer";
 
 export default function App() {
   const player1: Player = { id: 1, isHuman: true };
@@ -172,6 +173,9 @@ export default function App() {
         ></TileSet>
         <Grid moves={game.moves}></Grid>
       </main>
+
+      <Footer />
+
       {showWinModal && (
         <Modal
           message={
