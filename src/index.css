@@ -14,11 +14,10 @@ code {
 
 main {
   display: flex;
-  justify-content: center;
   margin: 5px;
 }
 
 .menu {
+  width: 100%;
   position: fixed;
-  top: 5px;
 }
