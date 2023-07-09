@@ -6,7 +6,14 @@ import Modal from "./components/Modal";
 import { computerMove, createPlayerTiles, flipTile } from "./utils";
 import GameTree from "./GameTree";
 
-import type { Game, Player, PlayerCollection, Tile, TreeNode } from "./types";
+import type {
+  Game,
+  Player,
+  PlayerCollection,
+  Tile,
+  TreeNode,
+  Move,
+} from "./types";
 import { useState } from "react";
 import Footer from "./components/Footer";
 
@@ -66,45 +73,37 @@ export default function App() {
 
     // check for winner
     let winner: Player | null = null;
+    let noMovesLeft: boolean = false;
+
     if (node.children.length === 0) {
       winner = player1;
+      noMovesLeft = true;
     }
-    setGame((prev: Game) => {
-      const gameClone = structuredClone(prev);
-      gameClone.moves.push({
-        player: player1,
-        node: node,
-      });
-      gameClone.currentPlayer = player2;
-      gameClone.status.isComplete = winner ? true : false;
-      gameClone.status.winner = winner;
-      return gameClone;
-    });
-    if (winner) {
-      setShowWinModal(true);
-      return;
+    let roundMoves: Move[] = [{ player: player1, node: node }];
+
+    if (!winner) {
+      // If player 1 didn't win, run the computer's turn
+      const computerNode: TreeNode = computerMove(node);
+      if (node.tile.color_2 !== computerNode.tile.color_1) {
+        flipTile(computerNode.tile);
+        setPlayer2Tiles([...player2Collection.tiles]);
+      }
+      roundMoves.push({ player: player2, node: computerNode });
+
+      noMovesLeft = computerNode.children.length === 0;
+      if (game.moves.length + roundMoves.length < 10 && noMovesLeft) {
+        winner = player2;
+      }
     }
 
-    const computerNode: TreeNode = computerMove(node);
-    if (node.tile.color_2 !== computerNode.tile.color_1) {
-      flipTile(computerNode.tile);
-      setPlayer2Tiles([...player2Collection.tiles]);
-    }
-    const noMovesLeft = computerNode.children.length === 0;
-    if (game.moves.length < 9 && noMovesLeft) {
-      winner = player2;
-    }
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
 
-      gameClone.moves.push({
-        player: player2,
-        node: computerNode,
-      });
+      gameClone.moves.push(...roundMoves);
       gameClone.currentPlayer = player1;
-
       gameClone.status.isComplete = noMovesLeft;
       gameClone.status.winner = winner;
+
       return gameClone;
     });
     if (noMovesLeft) {
@@ -113,10 +112,12 @@ export default function App() {
   }
 
   function resetGame() {
+    const moves: Move[] = [];
+    const newTree = null;
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
 
-      game.moves.length = 0;
+      game.moves = moves;
       game.currentPlayer = player1;
       game.status.isComplete = false;
       game.status.winner = null;
@@ -125,7 +126,7 @@ export default function App() {
     });
     setPlayer1Tiles(createPlayerTiles(player1));
     setPlayer2Tiles(createPlayerTiles(player2));
-    setTree(null);
+    setTree(newTree);
   }
 
   function handleFlipClick(playerCollection: PlayerCollection, index: number) {
