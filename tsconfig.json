@@ -17,5 +17,6 @@
     "jsx": "react-jsx",
     "outDir": "public"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [".git", "node_modules"]
 }
