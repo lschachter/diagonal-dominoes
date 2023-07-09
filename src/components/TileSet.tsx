@@ -53,9 +53,7 @@ export default function TileSet({
           );
         })}
       </div>
-      {!playerCollection.player.isHuman ? (
-        ""
-      ) : (
+      {playerCollection.player.isHuman && (
         <div className="placement-buttons" id={placementButtonsId}>
           <div>
             <button

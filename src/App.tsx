@@ -22,32 +22,36 @@ export default function App() {
   const player2: Player = { id: 2, isHuman: false };
 
   const [tree, setTree] = useState(null as any);
-  const [player1Tiles, setPlayer1Tiles] = useState(createPlayerTiles(player1));
-  const [player2Tiles, setPlayer2Tiles] = useState(createPlayerTiles(player2));
+  const [playerTiles, setPlayerTiles] = useState([
+    createPlayerTiles(player1),
+    createPlayerTiles(player2),
+  ]);
   const [game, setGame] = useState({
     moves: [],
     currentPlayer: player1,
     status: { isComplete: false, winner: null },
   } as Game);
 
-  const [showWinModal, setShowWinModal] = useState(false);
-  const [showInstructionsModal, setShowInstructionsModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [modals, setModals] = useState({
+    winner: false,
+    error: false,
+    instructions: false,
+  });
 
   const player1Collection: PlayerCollection = {
     player: player1,
-    tiles: player1Tiles,
+    tiles: playerTiles[0],
   };
 
   const player2Collection: PlayerCollection = {
     player: player2,
-    tiles: player2Tiles,
+    tiles: playerTiles[1],
   };
 
   function handlePlaceClick(tile: Tile) {
     let node: TreeNode;
 
-    if (tree === null) {
+    if (tree === null || tree === undefined) {
       tile.isAvailable = false;
       node = {
         tile: tile,
@@ -62,13 +66,13 @@ export default function App() {
         (child) => child.tile.id === tile.id
       );
       if (foundNode === undefined) {
-        setShowErrorModal(true);
+        setModals({ winner: false, error: true, instructions: false });
         return;
       }
       node = foundNode;
       if (parent.tile.color_2 !== node.tile.color_1) {
         flipTile(node.tile);
-        setPlayer1Tiles([...player1Collection.tiles]);
+        updateTiles(player1Collection);
       }
     }
     tile.isAvailable = false;
@@ -88,7 +92,7 @@ export default function App() {
       const computerNode: TreeNode = computerMove(node);
       if (node.tile.color_2 !== computerNode.tile.color_1) {
         flipTile(computerNode.tile);
-        setPlayer2Tiles([...player2Collection.tiles]);
+        updateTiles(player2Collection);
       }
       roundMoves.push({ player: player2, node: computerNode });
 
@@ -109,7 +113,7 @@ export default function App() {
       return gameClone;
     });
     if (noMovesLeft) {
-      setShowWinModal(true);
+      setModals({ winner: true, error: false, instructions: false });
     }
   }
 
@@ -125,27 +129,29 @@ export default function App() {
 
       return gameClone;
     });
-    setPlayer1Tiles(createPlayerTiles(player1));
-    setPlayer2Tiles(createPlayerTiles(player2));
+    setPlayerTiles([createPlayerTiles(player1), createPlayerTiles(player2)]);
+  }
+
+  function updateTiles(playerCollection: PlayerCollection) {
+    setPlayerTiles((prev) => {
+      const tilesClone = structuredClone(prev);
+      tilesClone[playerCollection.player.id - 1] = [...playerCollection.tiles];
+
+      return tilesClone;
+    });
   }
 
   function handleFlipClick(playerCollection: PlayerCollection, index: number) {
     flipTile(playerCollection.tiles[index]);
-    if (playerCollection.player.id === 1) {
-      setPlayer1Tiles([...playerCollection.tiles]);
-    } else {
-      setPlayer2Tiles([...playerCollection.tiles]);
-    }
+    updateTiles(playerCollection);
   }
 
   function handleEscapeClick() {
-    setShowWinModal(false);
-    setShowInstructionsModal(false);
-    setShowErrorModal(false);
+    setModals({ winner: false, error: false, instructions: false });
   }
 
   function handleInstructionsClick() {
-    setShowInstructionsModal(true);
+    setModals({ winner: false, error: false, instructions: true });
   }
 
   return (
@@ -184,7 +190,7 @@ export default function App() {
 
       <Footer />
 
-      {showWinModal && (
+      {modals.winner && (
         <Modal
           message={
             game.status.winner
@@ -196,7 +202,7 @@ export default function App() {
           onEscapeClick={() => handleEscapeClick()}
         />
       )}
-      {showInstructionsModal && (
+      {modals.instructions && (
         <Modal
           message={
             "Choose a tile to 'place' at the bottom left corner of the board. \
@@ -210,7 +216,7 @@ export default function App() {
           onEscapeClick={() => handleEscapeClick()}
         />
       )}
-      {showErrorModal && (
+      {modals.error && (
         <Modal
           message={
             "That move is invalid. Choose a tile whose leftmost color corresponds \
