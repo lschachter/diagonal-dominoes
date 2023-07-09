@@ -9,7 +9,7 @@ type Props = {
 export default function Grid({ moves }: Props) {
   const gridIds: number[][] = [];
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 11; i++) {
     let row: number[] = [];
     for (let j = 0; j < 10; j++) {
       let id: number = i * 10 + j;

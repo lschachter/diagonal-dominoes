@@ -116,7 +116,7 @@ export default function App() {
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
 
-      game.moves = [];
+      game.moves = new Array();
       game.currentPlayer = player1;
       game.status.isComplete = false;
       game.status.winner = null;
@@ -164,6 +164,9 @@ export default function App() {
             handleFlipClick(collection, index)
           }
         ></TileSet>
+
+        <Grid moves={game.moves}></Grid>
+
         <TileSet
           playerCollection={player2Collection}
           currentPlayer={game.currentPlayer}
@@ -172,7 +175,6 @@ export default function App() {
             handleFlipClick(collection, index)
           }
         ></TileSet>
-        <Grid moves={game.moves}></Grid>
       </main>
 
       <Footer />

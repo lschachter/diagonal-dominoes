@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import "./css/TileSet.css";
 import TileComponent from "./TileComponent";
 import type { Player, PlayerCollection, Tile } from "../types";
 import { useState } from "react";
@@ -21,7 +20,6 @@ export default function TileSet({
   const [tileIndex, setTileIndex] = useState(-1);
 
   const baseId: string = `player-${playerCollection.player.id}`;
-  const float: string = playerCollection.player.id === 1 ? "left" : "right";
 
   let placeTileButtonId: string = `${baseId}-place-tile`;
   let flipTileButtonId: string = `${baseId}-switch-tile`;
@@ -52,7 +50,7 @@ export default function TileSet({
   );
 
   return (
-    <div className={classNames("tile-functionality", float)}>
+    <div className={classNames("tile-functionality")}>
       <h3>Player {playerCollection.player.id}</h3>
       <div className="tile-set">
         {playerCollection.tiles.map((tile, index) => {

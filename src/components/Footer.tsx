@@ -5,7 +5,14 @@ export default function Footer() {
     <footer>
       <p>
         This website is a work in progress. You can find the code{" "}
-        <a href="https://www.youtube.com/watch?v=MsnQ5uepIaE">here</a>.
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://github.com/lschachter/diagonal-dominoes/tree/main"
+        >
+          here
+        </a>
+        .
       </p>
     </footer>
   );

@@ -3,6 +3,7 @@
   grid-template-columns: repeat(11, 60px);
   grid-template-rows: 50px repeat(10, 60px);
   gap: 2px;
+  padding: 30px 7px 0px 7px;
 }
 
 .square {
