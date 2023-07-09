@@ -13,11 +13,13 @@ code {
 }
 
 main {
-  display: flex;
   margin: 5px;
 }
 
-.menu {
-  width: 100%;
-  position: fixed;
+.board {
+  display: flex;
+}
+
+.wrapper {
+  margin: auto;
 }

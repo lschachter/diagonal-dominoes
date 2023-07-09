@@ -58,7 +58,9 @@ export default function App() {
       setTree(tree);
     } else {
       const parent: TreeNode = game.moves[game.moves.length - 1].node;
-      const foundNode = parent.children.find((child) => child.tile === tile);
+      const foundNode = parent.children.find(
+        (child) => child.tile.id === tile.id
+      );
       if (foundNode === undefined) {
         setShowErrorModal(true);
         return;
@@ -112,12 +114,11 @@ export default function App() {
   }
 
   function resetGame() {
-    const moves: Move[] = [];
-    const newTree = null;
+    setTree(null);
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
 
-      game.moves = moves;
+      game.moves = [];
       game.currentPlayer = player1;
       game.status.isComplete = false;
       game.status.winner = null;
@@ -126,7 +127,6 @@ export default function App() {
     });
     setPlayer1Tiles(createPlayerTiles(player1));
     setPlayer2Tiles(createPlayerTiles(player2));
-    setTree(newTree);
   }
 
   function handleFlipClick(playerCollection: PlayerCollection, index: number) {
@@ -151,31 +151,35 @@ export default function App() {
   return (
     <div className="App">
       <main>
-        <div className="menu">
-          <button onClick={() => resetGame()}>New Game</button>
-          <button onClick={() => handleInstructionsClick()}>
-            Instructions
-          </button>
+        <div className="wrapper">
+          <div className="menu">
+            <button onClick={() => resetGame()}>New Game</button>
+            <button onClick={() => handleInstructionsClick()}>
+              Instructions
+            </button>
+          </div>
+          <div className="board">
+            <TileSet
+              playerCollection={player1Collection}
+              currentPlayer={game.currentPlayer}
+              onPlaceClick={(tile) => handlePlaceClick(tile)}
+              onFlipClick={(collection, index) =>
+                handleFlipClick(collection, index)
+              }
+            ></TileSet>
+
+            <Grid moves={game.moves}></Grid>
+
+            <TileSet
+              playerCollection={player2Collection}
+              currentPlayer={game.currentPlayer}
+              onPlaceClick={(tile) => handlePlaceClick(tile)}
+              onFlipClick={(collection, index) =>
+                handleFlipClick(collection, index)
+              }
+            ></TileSet>
+          </div>
         </div>
-        <TileSet
-          playerCollection={player1Collection}
-          currentPlayer={game.currentPlayer}
-          onPlaceClick={(tile) => handlePlaceClick(tile)}
-          onFlipClick={(collection, index) =>
-            handleFlipClick(collection, index)
-          }
-        ></TileSet>
-
-        <Grid moves={game.moves}></Grid>
-
-        <TileSet
-          playerCollection={player2Collection}
-          currentPlayer={game.currentPlayer}
-          onPlaceClick={(tile) => handlePlaceClick(tile)}
-          onFlipClick={(collection, index) =>
-            handleFlipClick(collection, index)
-          }
-        ></TileSet>
       </main>
 
       <Footer />

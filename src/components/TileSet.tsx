@@ -29,24 +29,11 @@ export default function TileSet({
     setTileIndex(index);
   }
 
-  let placeTileButton = (
-    <button
-      id={placeTileButtonId}
-      disabled={disabled}
-      onClick={() => onPlaceClick(playerCollection.tiles[tileIndex])}
-    >
-      Place
-    </button>
-  );
-  let flipTileButton = (
-    <button
-      id={flipTileButtonId}
-      disabled={disabled}
-      onClick={() => onFlipClick(playerCollection, tileIndex)}
-    >
-      Flip
-    </button>
-  );
+  function handleUpdateDisableState() {
+    setDisabled(true);
+    setTileIndex(-1);
+    onPlaceClick(playerCollection.tiles[tileIndex]);
+  }
 
   return (
     <div className="tile-functionality">
@@ -71,8 +58,20 @@ export default function TileSet({
       ) : (
         <div className="placement-buttons" id={placementButtonsId}>
           <div>
-            {flipTileButton}
-            {placeTileButton}
+            <button
+              id={flipTileButtonId}
+              disabled={disabled}
+              onClick={() => onFlipClick(playerCollection, tileIndex)}
+            >
+              Flip
+            </button>
+            <button
+              id={placeTileButtonId}
+              disabled={disabled}
+              onClick={() => handleUpdateDisableState()}
+            >
+              Place
+            </button>
           </div>
         </div>
       )}
