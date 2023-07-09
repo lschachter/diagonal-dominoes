@@ -41,6 +41,7 @@ export default function App() {
     let node: TreeNode;
 
     if (tree === null) {
+      tile.isAvailable = false;
       node = {
         tile: tile,
         children: [],
@@ -74,7 +75,7 @@ export default function App() {
         player: player1,
         node: node,
       });
-      //gameClone.currentPlayer = player2;
+      gameClone.currentPlayer = player2;
       gameClone.status.isComplete = winner ? true : false;
       gameClone.status.winner = winner;
       return gameClone;

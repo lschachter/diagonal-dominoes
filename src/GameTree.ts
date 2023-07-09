@@ -1,7 +1,7 @@
 import type { TreeNode, PlayerCollection, Tile } from "./types";
 
 export default function GameTree(root: TreeNode, players: PlayerCollection[]) {
-  const maxDepth: number = 9;
+  const maxDepth: number = 10;
 
   nextMove(players[1], 1, root, root.tile.color_2);
   // printTree();
