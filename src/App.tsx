@@ -116,7 +116,7 @@ export default function App() {
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
 
-      game.moves = new Array();
+      game.moves.length = 0;
       game.currentPlayer = player1;
       game.status.isComplete = false;
       game.status.winner = null;

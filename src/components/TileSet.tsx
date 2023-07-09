@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import TileComponent from "./TileComponent";
 import type { Player, PlayerCollection, Tile } from "../types";
 import { useState } from "react";
@@ -50,7 +49,7 @@ export default function TileSet({
   );
 
   return (
-    <div className={classNames("tile-functionality")}>
+    <div className="tile-functionality">
       <h3>Player {playerCollection.player.id}</h3>
       <div className="tile-set">
         {playerCollection.tiles.map((tile, index) => {
