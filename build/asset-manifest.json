@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/diagonal-dominoes/static/css/main.a4006edf.css",
+    "main.js": "/diagonal-dominoes/static/js/main.9dea6d78.js",
+    "static/js/787.ee98d4d4.chunk.js": "/diagonal-dominoes/static/js/787.ee98d4d4.chunk.js",
+    "index.html": "/diagonal-dominoes/index.html",
+    "main.a4006edf.css.map": "/diagonal-dominoes/static/css/main.a4006edf.css.map",
+    "main.9dea6d78.js.map": "/diagonal-dominoes/static/js/main.9dea6d78.js.map",
+    "787.ee98d4d4.chunk.js.map": "/diagonal-dominoes/static/js/787.ee98d4d4.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a4006edf.css",
+    "static/js/main.9dea6d78.js"
+  ]
+}
