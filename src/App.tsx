@@ -21,7 +21,7 @@ export default function App() {
   const player1: Player = { id: 1, isHuman: true };
   const player2: Player = { id: 2, isHuman: false };
 
-  const [tree, setTree] = useState(null as any);
+  const [tree, setTree] = useState(null as TreeNode | null);
   const [playerTiles, setPlayerTiles] = useState([
     createPlayerTiles(player1),
     createPlayerTiles(player2),
@@ -51,15 +51,14 @@ export default function App() {
   function handlePlaceClick(tile: Tile) {
     let node: TreeNode;
 
-    if (tree === null || tree === undefined) {
+    if (tree === null) {
       tile.isAvailable = false;
       node = {
         tile: tile,
         children: [],
         payOff: 0,
       };
-      const tree = GameTree(node, [player1Collection, player2Collection]);
-      setTree(tree);
+      setTree(GameTree(node, [player1Collection, player2Collection]));
     } else {
       const parent: TreeNode = game.moves[game.moves.length - 1].node;
       const foundNode = parent.children.find(
@@ -92,8 +91,8 @@ export default function App() {
       const computerNode: TreeNode = computerMove(node);
       if (node.tile.color_2 !== computerNode.tile.color_1) {
         flipTile(computerNode.tile);
-        updateTiles(player2Collection);
       }
+      updateTiles(player2Collection);
       roundMoves.push({ player: player2, node: computerNode });
 
       noMovesLeft = computerNode.children.length === 0;
@@ -119,17 +118,17 @@ export default function App() {
 
   function resetGame() {
     setTree(null);
+    setPlayerTiles([createPlayerTiles(player1), createPlayerTiles(player2)]);
     setGame((prev: Game) => {
-      const gameClone = structuredClone(prev);
+      let gameClone = structuredClone(prev);
 
-      game.moves = [];
-      game.currentPlayer = player1;
-      game.status.isComplete = false;
-      game.status.winner = null;
+      gameClone.moves = [];
+      gameClone.currentPlayer = player1;
+      gameClone.status.isComplete = false;
+      gameClone.status.winner = null;
 
       return gameClone;
     });
-    setPlayerTiles([createPlayerTiles(player1), createPlayerTiles(player2)]);
   }
 
   function updateTiles(playerCollection: PlayerCollection) {

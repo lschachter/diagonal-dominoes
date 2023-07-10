@@ -6,6 +6,8 @@ export default function GameTree(root: TreeNode, players: PlayerCollection[]) {
   nextMove(players[1], 1, root, root.tile.color_2);
   // printTree();
 
+  return root;
+
   function nextMove(
     playerCollection: PlayerCollection,
     depth: number,
