@@ -8,7 +8,7 @@ export default function Footer() {
         <a
           target="_blank"
           rel="noreferrer"
-          href="https://github.com/lschachter/diagonal-dominoes/tree/main"
+          href="https://github.com/lschachter/diagonal-dominoes"
         >
           here
         </a>
