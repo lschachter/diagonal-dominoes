@@ -19,7 +19,9 @@ export default function Modal({
     <div className="modal" onClick={onEscapeClick}>
       <div className="modal-contents">
         <p>{message}</p>
-        <button onClick={onClick}>{label}</button>
+        <button className="clickable" onClick={onClick}>
+          {label}
+        </button>
       </div>
     </div>
   );

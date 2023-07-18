@@ -20,7 +20,11 @@ export default function TileComponent({
   return (
     <button
       onClick={onClick}
-      className={classNames("tile", isClicked ? "highlighted" : "")}
+      className={classNames(
+        "tile",
+        isClicked ? "highlighted" : "",
+        isPlayable ? "clickable" : ""
+      )}
       id={tile.id}
       disabled={!isPlayable}
     >

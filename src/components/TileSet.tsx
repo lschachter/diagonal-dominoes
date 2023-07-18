@@ -1,6 +1,7 @@
 import TileComponent from "./TileComponent";
 import type { Player, PlayerCollection, Tile } from "../types";
 import { useState } from "react";
+import classNames from "classnames";
 
 type Props = {
   playerCollection: PlayerCollection;
@@ -57,6 +58,7 @@ export default function TileSet({
         <div className="placement-buttons" id={placementButtonsId}>
           <div>
             <button
+              className={classNames(disabled ? "" : "clickable")}
               id={flipTileButtonId}
               disabled={disabled}
               onClick={() => onFlipClick(playerCollection, tileIndex)}
@@ -64,6 +66,7 @@ export default function TileSet({
               Flip
             </button>
             <button
+              className={classNames(disabled ? "" : "clickable")}
               id={placeTileButtonId}
               disabled={disabled}
               onClick={() => handleUpdateDisableState()}
