@@ -3,6 +3,8 @@
   --blue: #212eba;
   --green: #2ec061;
   --yellow: #f2b147;
+  --dark-gray: #1a2a32;
+  --light-gray: #d3d3d3;
   --gray: #2e4756;
   background-color: var(--gray);
 }
@@ -37,11 +39,30 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap");
+
+* {
+  list-style: none;
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.shadow {
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+    rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+
+.border {
+  border: 1px solid rgba(211, 211, 211, 0.4) !important;
+}
+
+.clickable:hover {
+  cursor: pointer;
 }

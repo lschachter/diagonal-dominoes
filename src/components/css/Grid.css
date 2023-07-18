@@ -6,6 +6,15 @@
   padding: 30px 7px 0px 7px;
 }
 
+@media (max-width: 950px) {
+  .grid {
+    grid-template-columns: repeat(11, 25px);
+    grid-template-rows: 25px repeat(10, 25px);
+    gap: 1px;
+    padding: 60px 7px 0px 7px;
+  }
+}
+
 .square {
   display: flex;
   justify-content: center;
@@ -13,4 +22,21 @@
   height: 60px;
   align-items: center;
   border: 1px solid rgba(211, 211, 211, 0.4) !important;
+}
+
+@media (max-width: 950px) {
+  .square {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+.placed-tile {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.placed-tile div {
+  width: 85%;
+  height: 85%;
+  margin: 2%;
 }

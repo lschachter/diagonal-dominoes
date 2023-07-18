@@ -15,7 +15,7 @@
   height: 250px;
   width: 100%;
   max-width: 300px;
-  background-color: #2a4544;
+  background-color: var(--gray);
   border-radius: 20px;
   display: flex;
   flex-direction: column;
@@ -28,7 +28,7 @@
 
 .modal-contents button {
   padding: 10px;
-  background-color: #2a4544;
+  background-color: var(--gray);
   color: white;
   border-radius: 3px;
 }
