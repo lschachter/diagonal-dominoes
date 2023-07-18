@@ -35,4 +35,5 @@ export type Game = {
   moves: Move[];
   currentPlayer: Player;
   status: GameStatus;
+  type: "easy" | "difficult" | "human";
 };

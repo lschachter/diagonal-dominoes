@@ -71,15 +71,25 @@ export function flipTile(tile: Tile) {
   tile.color_2 = tempColor;
 }
 
-export function computerMove(node: TreeNode) {
+export function computerMove(node: TreeNode, difficulty: string) {
   let childrenByPay: Map<number, TreeNode> = new Map();
   for (let child of node.children) {
     childrenByPay.set(child.payOff, child);
   }
 
-  let nextNode: TreeNode = [...childrenByPay.entries()].reduce((a, b) =>
-    a[0] > b[0] ? a : b
-  )[1];
+  let nextNode: TreeNode;
+
+  if (difficulty === "easy") {
+    // If easy, pick the worst move
+    nextNode = [...childrenByPay.entries()].reduce((a, b) =>
+      a[0] < b[0] ? a : b
+    )[1];
+  } else {
+    //if (difficulty === 'hard') {
+    nextNode = [...childrenByPay.entries()].reduce((a, b) =>
+      a[0] > b[0] ? a : b
+    )[1];
+  }
   nextNode.tile.isAvailable = false;
   return nextNode;
 }

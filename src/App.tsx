@@ -16,10 +16,12 @@ import type {
 } from "./types";
 import { useState } from "react";
 import Footer from "./components/Footer";
+import Menu from "./components/Menu";
 
 export default function App() {
   const player1: Player = { id: 1, isHuman: true };
-  const player2: Player = { id: 2, isHuman: false };
+
+  const [player2, setPlayer2] = useState({ id: 2, isHuman: false } as Player);
 
   const [tree, setTree] = useState(null as TreeNode | null);
   const [playerTiles, setPlayerTiles] = useState([
@@ -30,6 +32,7 @@ export default function App() {
     moves: [],
     currentPlayer: player1,
     status: { isComplete: false, winner: null },
+    type: "easy",
   } as Game);
 
   const [modals, setModals] = useState({
@@ -88,7 +91,7 @@ export default function App() {
 
     if (!winner) {
       // If player 1 didn't win, run the computer's turn
-      const computerNode: TreeNode = computerMove(node);
+      const computerNode: TreeNode = computerMove(node, game.type);
       if (node.tile.color_2 !== computerNode.tile.color_1) {
         flipTile(computerNode.tile);
       }
@@ -116,7 +119,7 @@ export default function App() {
     }
   }
 
-  function resetGame() {
+  function resetGame(gameType: Game["type"]) {
     setTree(null);
     setPlayerTiles([createPlayerTiles(player1), createPlayerTiles(player2)]);
     setGame((prev: Game) => {
@@ -126,9 +129,13 @@ export default function App() {
       gameClone.currentPlayer = player1;
       gameClone.status.isComplete = false;
       gameClone.status.winner = null;
+      gameClone.type = gameType;
 
       return gameClone;
     });
+    let currentPlayer2 = { ...player2 };
+    currentPlayer2.isHuman = gameType === "human";
+    setPlayer2(currentPlayer2);
   }
 
   function updateTiles(playerCollection: PlayerCollection) {
@@ -195,8 +202,8 @@ export default function App() {
               : "Tie!"
           }
           label="Play Again"
-          onClick={() => resetGame()}
-          onEscapeClick={() => handleEscapeClick()}
+          onClick={() => resetGame(game.type)}
+          onEscapeClick={handleEscapeClick}
         />
       )}
       {modals.instructions && (
