@@ -157,12 +157,10 @@ export default function App() {
     <div className="App">
       <main>
         <div className="wrapper">
-          <div className="menu">
-            <button onClick={() => resetGame()}>New Game</button>
-            <button onClick={() => handleInstructionsClick()}>
-              Instructions
-            </button>
-          </div>
+          <Menu
+            resetGame={(gameType) => resetGame(gameType)}
+            onInstructionsClick={handleInstructionsClick}
+          ></Menu>
           <div className="board">
             <TileSet
               playerCollection={player1Collection}

@@ -1,0 +1,21 @@
+.menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.items {
+  z-index: 10;
+  border-radius: 2px;
+  top: 60px;
+  position: absolute;
+}
+
+.items button {
+  padding: 8px;
+}
+
+.items button:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
