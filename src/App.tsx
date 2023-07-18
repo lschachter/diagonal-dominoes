@@ -216,8 +216,8 @@ export default function App() {
             all of your tiles, you tie."
           }
           label="Play"
-          onClick={() => handleEscapeClick()}
-          onEscapeClick={() => handleEscapeClick()}
+          onClick={handleEscapeClick}
+          onEscapeClick={handleEscapeClick}
         />
       )}
       {modals.error && (
@@ -227,8 +227,8 @@ export default function App() {
             to the rightmost tile-color on the board."
           }
           label="Play"
-          onClick={() => handleEscapeClick()}
-          onEscapeClick={() => handleEscapeClick()}
+          onClick={handleEscapeClick}
+          onEscapeClick={handleEscapeClick}
         />
       )}
     </div>
