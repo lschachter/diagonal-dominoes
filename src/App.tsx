@@ -52,7 +52,32 @@ export default function App() {
   };
 
   function handlePlaceClick(tile: Tile) {
-    let node: TreeNode;
+    let node: TreeNode | null = humanMove(tile);
+    if (node === null) {
+      setModals({ winner: false, error: true, instructions: false });
+      return;
+    }
+
+    // Check if the player won
+    let winner: Player | null = null;
+    let isComplete: boolean = false;
+
+    if (node.children.length === 0) {
+      winner = game.currentPlayer;
+      isComplete = true;
+    }
+
+    // Track this move in the game state
+    saveMove({ player: game.currentPlayer, node }, isComplete, winner);
+
+    if (!winner && !player2.isHuman) {
+      // If player 1 didn't win and player 2 is the AI, run the computer's turn
+      runComputerMove(node);
+    }
+  }
+
+  function humanMove(tile: Tile) {
+    let node: TreeNode | undefined;
 
     if (tree === null) {
       tile.isAvailable = false;
@@ -61,60 +86,53 @@ export default function App() {
         children: [],
         payOff: 0,
       };
+      // Create the game tree even for human v human for ease of validating moves
       setTree(GameTree(node, [player1Collection, player2Collection]));
     } else {
+      // Use the previous move to figure out if the selected tile is valid
       const parent: TreeNode = game.moves[game.moves.length - 1].node;
-      const foundNode = parent.children.find(
-        (child) => child.tile.id === tile.id
-      );
-      if (foundNode === undefined) {
-        setModals({ winner: false, error: true, instructions: false });
-        return;
+      node = parent.children.find((child) => child.tile.id === tile.id);
+      if (node === undefined) {
+        return null;
       }
-      node = foundNode;
       if (parent.tile.color_2 !== node.tile.color_1) {
         flipTile(node.tile);
         updateTiles(player1Collection);
       }
     }
     tile.isAvailable = false;
+    return node;
+  }
 
-    // check for winner
-    let winner: Player | null = null;
-    let noMovesLeft: boolean = false;
-
-    if (node.children.length === 0) {
-      winner = player1;
-      noMovesLeft = true;
+  function runComputerMove(node: TreeNode) {
+    const computerNode: TreeNode = computerMove(node, game.type);
+    if (node.tile.color_2 !== computerNode.tile.color_1) {
+      flipTile(computerNode.tile);
     }
-    let roundMoves: Move[] = [{ player: player1, node: node }];
+    computerNode.tile.isAvailable = false;
+    // The computer can only be player 2
+    updateTiles(player2Collection);
 
-    if (!winner) {
-      // If player 1 didn't win, run the computer's turn
-      const computerNode: TreeNode = computerMove(node, game.type);
-      if (node.tile.color_2 !== computerNode.tile.color_1) {
-        flipTile(computerNode.tile);
-      }
-      updateTiles(player2Collection);
-      roundMoves.push({ player: player2, node: computerNode });
+    let isComplete: boolean = computerNode.children.length === 0;
+    let winner: Player | null =
+      game.moves.length < 8 && isComplete ? player2 : null;
 
-      noMovesLeft = computerNode.children.length === 0;
-      if (game.moves.length + roundMoves.length < 10 && noMovesLeft) {
-        winner = player2;
-      }
-    }
+    saveMove({ player: player2, node: computerNode }, isComplete, winner);
+  }
 
+  function saveMove(move: Move, isComplete: boolean, winner: Player | null) {
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
 
-      gameClone.moves.push(...roundMoves);
-      gameClone.currentPlayer = player1;
-      gameClone.status.isComplete = noMovesLeft;
+      gameClone.moves.push(move);
+      gameClone.currentPlayer =
+        gameClone.currentPlayer === player1 ? player2 : player1;
+      gameClone.status.isComplete = isComplete;
       gameClone.status.winner = winner;
 
       return gameClone;
     });
-    if (noMovesLeft) {
+    if (isComplete) {
       setModals({ winner: true, error: false, instructions: false });
     }
   }

@@ -80,12 +80,12 @@ export function computerMove(node: TreeNode, difficulty: string) {
   let nextNode: TreeNode;
 
   if (difficulty === "easy") {
-    // If easy, pick the worst move
+    // If the AI is easy, pick the worst move
     nextNode = [...childrenByPay.entries()].reduce((a, b) =>
       a[0] < b[0] ? a : b
     )[1];
   } else {
-    //if (difficulty === 'hard') {
+    // Otherwise, pick the best one (this function will never run on "human")
     nextNode = [...childrenByPay.entries()].reduce((a, b) =>
       a[0] > b[0] ? a : b
     )[1];
