@@ -58,17 +58,7 @@ export default function App() {
       return;
     }
 
-    // Check if the player won
-    let winner: Player | null = null;
-    let isComplete: boolean = false;
-
-    if (node.children.length === 0) {
-      winner = game.currentPlayer;
-      isComplete = true;
-    }
-
-    // Track this move in the game state
-    saveMove({ player: game.currentPlayer, node }, isComplete, winner);
+    const winner: Player | null = checkWinner(node, 9, game.currentPlayer);
 
     if (!winner && !player2.isHuman) {
       // If player 1 didn't win and player 2 is the AI, run the computer's turn
@@ -97,7 +87,9 @@ export default function App() {
       }
       if (parent.tile.color_2 !== node.tile.color_1) {
         flipTile(node.tile);
-        updateTiles(player1Collection);
+        updateTiles(
+          game.moves.length % 2 === 0 ? player1Collection : player2Collection
+        );
       }
     }
     tile.isAvailable = false;
@@ -112,12 +104,17 @@ export default function App() {
     computerNode.tile.isAvailable = false;
     // The computer can only be player 2
     updateTiles(player2Collection);
+    checkWinner(computerNode, 8, player2);
+  }
 
-    let isComplete: boolean = computerNode.children.length === 0;
-    let winner: Player | null =
-      game.moves.length < 8 && isComplete ? player2 : null;
+  function checkWinner(node: TreeNode, maxMoves: number, player: Player) {
+    const isComplete: boolean = node.children.length === 0;
+    const winner: Player | null =
+      game.moves.length < maxMoves && isComplete ? player : null;
 
-    saveMove({ player: player2, node: computerNode }, isComplete, winner);
+    saveMove({ player, node }, isComplete, winner);
+
+    return winner;
   }
 
   function saveMove(move: Move, isComplete: boolean, winner: Player | null) {
@@ -126,7 +123,7 @@ export default function App() {
 
       gameClone.moves.push(move);
       gameClone.currentPlayer =
-        gameClone.currentPlayer === player1 ? player2 : player1;
+        gameClone.currentPlayer.id === player1.id ? player2 : player1;
       gameClone.status.isComplete = isComplete;
       gameClone.status.winner = winner;
 
@@ -189,7 +186,10 @@ export default function App() {
           <div className="board">
             <TileSet
               playerCollection={player1Collection}
-              currentPlayer={game.currentPlayer}
+              isPlayable={
+                !game.status.isComplete &&
+                game.currentPlayer.id === player1Collection.player.id
+              }
               onPlaceClick={(tile) => handlePlaceClick(tile)}
               onFlipClick={(collection, index) =>
                 handleFlipClick(collection, index)
@@ -200,7 +200,10 @@ export default function App() {
 
             <TileSet
               playerCollection={player2Collection}
-              currentPlayer={game.currentPlayer}
+              isPlayable={
+                !game.status.isComplete &&
+                game.currentPlayer.id === player2Collection.player.id
+              }
               onPlaceClick={(tile) => handlePlaceClick(tile)}
               onFlipClick={(collection, index) =>
                 handleFlipClick(collection, index)

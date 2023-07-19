@@ -5,14 +5,14 @@ import classNames from "classnames";
 
 type Props = {
   playerCollection: PlayerCollection;
-  currentPlayer: Player;
+  isPlayable: boolean;
   onPlaceClick(tile: Tile): void;
   onFlipClick(collection: PlayerCollection, index: number): void;
 };
 
 export default function TileSet({
   playerCollection,
-  currentPlayer,
+  isPlayable,
   onPlaceClick,
   onFlipClick,
 }: Props) {
@@ -37,7 +37,7 @@ export default function TileSet({
   }
 
   return (
-    <div className="tile-functionality">
+    <div className="player-collection">
       <h3>Player {playerCollection.player.id}</h3>
       <div className="tile-set">
         {playerCollection.tiles.map((tile, index) => {
@@ -47,7 +47,7 @@ export default function TileSet({
                 onClick={() => onTileClick(index)}
                 key={index + 1}
                 tile={tile}
-                isPlayable={currentPlayer.id === playerCollection.player.id}
+                isPlayable={isPlayable}
                 isClicked={tileIndex === index}
               ></TileComponent>
             )

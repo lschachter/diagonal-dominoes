@@ -48,13 +48,13 @@ export default function Menu({ resetGame, onInstructionsClick }: Props) {
           >
             Hard
           </button>
-          {/* <br/>
+          <br />
           <button
             className="clickable"
             onClick={() => handleGameReset("human")}
           >
             Human v Human
-          </button> */}
+          </button>
         </div>
       )}
     </div>

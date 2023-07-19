@@ -66,3 +66,7 @@ body {
 .clickable:hover {
   cursor: pointer;
 }
+
+.player-collection {
+  color: white;
+}
