@@ -1,11 +1,15 @@
+import { useState } from "react";
+
 import "./App.css";
 
 import TileSet from "./components/TileSet";
 import Grid from "./components/Grid";
 import Modal from "./components/Modal";
-import { computerMove, createPlayerTiles, flipTile } from "./utils";
 import GameTree from "./GameTree";
+import Footer from "./components/Footer";
+import Menu from "./components/Menu";
 
+import { computerMove, createPlayerTiles, flipTile } from "./utils";
 import type {
   Game,
   Player,
@@ -14,25 +18,20 @@ import type {
   TreeNode,
   Move,
 } from "./types";
-import { useState } from "react";
-import Footer from "./components/Footer";
-import Menu from "./components/Menu";
 
 export default function App() {
   const player1: Player = { id: 1, isHuman: true };
+  let player2: Player = { id: 2, isHuman: false };
 
-  const [player2, setPlayer2] = useState({ id: 2, isHuman: false } as Player);
-
-  const [tree, setTree] = useState(null as TreeNode | null);
-  const [playerTiles, setPlayerTiles] = useState([
-    createPlayerTiles(player1),
-    createPlayerTiles(player2),
-  ]);
   const [game, setGame] = useState({
     moves: [],
-    currentPlayer: player1,
     status: { isComplete: false, winner: null },
     type: "easy",
+    playerCollections: [
+      { player: player1, tiles: createPlayerTiles(player1) },
+      { player: player2, tiles: createPlayerTiles(player2) },
+    ],
+    tree: null,
   } as Game);
 
   const [modals, setModals] = useState({
@@ -41,16 +40,6 @@ export default function App() {
     instructions: false,
   });
 
-  const player1Collection: PlayerCollection = {
-    player: player1,
-    tiles: playerTiles[0],
-  };
-
-  const player2Collection: PlayerCollection = {
-    player: player2,
-    tiles: playerTiles[1],
-  };
-
   function handlePlaceClick(tile: Tile) {
     let node: TreeNode | null = humanMove(tile);
     if (node === null) {
@@ -58,9 +47,11 @@ export default function App() {
       return;
     }
 
-    const winner: Player | null = checkWinner(node, 9, game.currentPlayer);
+    const currentPlayer =
+      game.moves.length % 2 === 0 ? player1 : game.playerCollections[1].player;
+    const winner: Player | null = saveMove(node, 9, currentPlayer);
 
-    if (!winner && !player2.isHuman) {
+    if (!winner && !game.playerCollections[1].player.isHuman) {
       // If player 1 didn't win and player 2 is the AI, run the computer's turn
       runComputerMove(node);
     }
@@ -69,7 +60,7 @@ export default function App() {
   function humanMove(tile: Tile) {
     let node: TreeNode | undefined;
 
-    if (tree === null) {
+    if (game.tree === null) {
       tile.isAvailable = false;
       node = {
         tile: tile,
@@ -77,7 +68,7 @@ export default function App() {
         payOff: 0,
       };
       // Create the game tree even for human v human for ease of validating moves
-      setTree(GameTree(node, [player1Collection, player2Collection]));
+      GameTree(node, game.playerCollections);
     } else {
       // Use the previous move to figure out if the selected tile is valid
       const parent: TreeNode = game.moves[game.moves.length - 1].node;
@@ -87,9 +78,6 @@ export default function App() {
       }
       if (parent.tile.color_2 !== node.tile.color_1) {
         flipTile(node.tile);
-        updateTiles(
-          game.moves.length % 2 === 0 ? player1Collection : player2Collection
-        );
       }
     }
     tile.isAvailable = false;
@@ -102,69 +90,66 @@ export default function App() {
       flipTile(computerNode.tile);
     }
     computerNode.tile.isAvailable = false;
-    // The computer can only be player 2
-    updateTiles(player2Collection);
-    checkWinner(computerNode, 8, player2);
+    saveMove(computerNode, 8, game.playerCollections[1].player);
   }
 
-  function checkWinner(node: TreeNode, maxMoves: number, player: Player) {
+  function saveMove(node: TreeNode, maxMoves: number, player: Player) {
     const isComplete: boolean = node.children.length === 0;
     const winner: Player | null =
       game.moves.length < maxMoves && isComplete ? player : null;
 
-    saveMove({ player, node }, isComplete, winner);
-
-    return winner;
-  }
-
-  function saveMove(move: Move, isComplete: boolean, winner: Player | null) {
+    const root = game.tree !== null ? game.tree : node;
+    const tiles = game.playerCollections[player.id - 1].tiles;
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
 
-      gameClone.moves.push(move);
-      gameClone.currentPlayer =
-        gameClone.currentPlayer.id === player1.id ? player2 : player1;
+      gameClone.tree = root;
+      gameClone.moves.push({ player, node });
       gameClone.status.isComplete = isComplete;
       gameClone.status.winner = winner;
+      gameClone.playerCollections[player.id - 1].tiles = [...tiles];
 
       return gameClone;
     });
     if (isComplete) {
       setModals({ winner: true, error: false, instructions: false });
     }
+
+    return winner;
   }
 
   function resetGame(gameType: Game["type"]) {
-    setTree(null);
-    setPlayerTiles([createPlayerTiles(player1), createPlayerTiles(player2)]);
-    setGame((prev: Game) => {
-      let gameClone = structuredClone(prev);
+    let newPlayer2 = { ...player2 };
+    newPlayer2.isHuman = gameType === "human";
 
+    setGame((prev: Game) => {
+      const gameClone = structuredClone(prev);
+
+      gameClone.tree = null;
       gameClone.moves = [];
-      gameClone.currentPlayer = player1;
+      gameClone.type = gameType;
+      gameClone.playerCollections[0].tiles = createPlayerTiles(player1);
+      gameClone.playerCollections[1] = {
+        player: newPlayer2,
+        tiles: createPlayerTiles(newPlayer2),
+      };
       gameClone.status.isComplete = false;
       gameClone.status.winner = null;
-      gameClone.type = gameType;
 
       return gameClone;
-    });
-    let currentPlayer2 = { ...player2 };
-    currentPlayer2.isHuman = gameType === "human";
-    setPlayer2(currentPlayer2);
-  }
-
-  function updateTiles(playerCollection: PlayerCollection) {
-    setPlayerTiles((prev) => {
-      const tilesClone = structuredClone(prev);
-      tilesClone[playerCollection.player.id - 1] = [...playerCollection.tiles];
-
-      return tilesClone;
     });
   }
 
   function handleFlipClick(playerCollection: PlayerCollection, index: number) {
     flipTile(playerCollection.tiles[index]);
-    updateTiles(playerCollection);
+    setGame((prev) => {
+      const gameClone = structuredClone(prev);
+      gameClone.playerCollections[playerCollection.player.id - 1].tiles = [
+        ...playerCollection.tiles,
+      ];
+
+      return gameClone;
+    });
   }
 
   function handleEscapeClick() {
@@ -185,10 +170,9 @@ export default function App() {
           ></Menu>
           <div className="board">
             <TileSet
-              playerCollection={player1Collection}
+              playerCollection={game.playerCollections[0]}
               isPlayable={
-                !game.status.isComplete &&
-                game.currentPlayer.id === player1Collection.player.id
+                !game.status.isComplete && game.moves.length % 2 === 0
               }
               onPlaceClick={(tile) => handlePlaceClick(tile)}
               onFlipClick={(collection, index) =>
@@ -199,10 +183,9 @@ export default function App() {
             <Grid moves={game.moves}></Grid>
 
             <TileSet
-              playerCollection={player2Collection}
+              playerCollection={game.playerCollections[1]}
               isPlayable={
-                !game.status.isComplete &&
-                game.currentPlayer.id === player2Collection.player.id
+                !game.status.isComplete && game.moves.length % 2 !== 0
               }
               onPlaceClick={(tile) => handlePlaceClick(tile)}
               onFlipClick={(collection, index) =>
