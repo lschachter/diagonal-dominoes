@@ -18,7 +18,7 @@ export default function App() {
   const player1: Player = { id: 1, isHuman: true };
   let player2: Player = { id: 2, isHuman: false };
 
-  const [game, setGame] = useLocalStorage("game-state-key", {
+  const [game, setGame] = useState({
     moves: [],
     status: { isComplete: false, winner: null },
     type: "easy",
