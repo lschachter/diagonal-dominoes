@@ -38,11 +38,3 @@ export type Game = {
   playerCollections: PlayerCollection[];
   tree: TreeNode | null;
 };
-
-export type GameState = {
-  currentGameMoves: Move[];
-  history: {
-    currentRoundGames: Game[];
-    allGames: Game[];
-  };
-};

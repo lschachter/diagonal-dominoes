@@ -1,5 +1,5 @@
 import TileComponent from "./TileComponent";
-import type { Player, PlayerCollection, Tile } from "../types";
+import type { PlayerCollection, Tile } from "../types";
 import { useState } from "react";
 import classNames from "classnames";
 

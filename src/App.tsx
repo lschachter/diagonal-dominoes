@@ -10,20 +10,15 @@ import Footer from "./components/Footer";
 import Menu from "./components/Menu";
 
 import { computerMove, createPlayerTiles, flipTile } from "./utils";
-import type {
-  Game,
-  Player,
-  PlayerCollection,
-  Tile,
-  TreeNode,
-  Move,
-} from "./types";
+import type { Game, Player, PlayerCollection, Tile, TreeNode } from "./types";
+
+import { useLocalStorage } from "./useLocalStorage";
 
 export default function App() {
   const player1: Player = { id: 1, isHuman: true };
   let player2: Player = { id: 2, isHuman: false };
 
-  const [game, setGame] = useState({
+  const [game, setGame] = useLocalStorage("game-state-key", {
     moves: [],
     status: { isComplete: false, winner: null },
     type: "easy",
@@ -35,7 +30,7 @@ export default function App() {
   } as Game);
 
   const [modals, setModals] = useState({
-    winner: false,
+    winner: game.status.isComplete,
     error: false,
     instructions: false,
   });
@@ -111,6 +106,7 @@ export default function App() {
 
       return gameClone;
     });
+
     if (isComplete) {
       setModals({ winner: true, error: false, instructions: false });
     }
@@ -142,7 +138,7 @@ export default function App() {
 
   function handleFlipClick(playerCollection: PlayerCollection, index: number) {
     flipTile(playerCollection.tiles[index]);
-    setGame((prev) => {
+    setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
       gameClone.playerCollections[playerCollection.player.id - 1].tiles = [
         ...playerCollection.tiles,
