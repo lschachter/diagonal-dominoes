@@ -5,18 +5,24 @@ import "./App.css";
 import TileSet from "./components/TileSet";
 import Grid from "./components/Grid";
 import Modal from "./components/Modal";
-import GameTree from "./GameTree";
 import Footer from "./components/Footer";
 import Menu from "./components/Menu";
 
-import { computerMove, createPlayerTiles, flipTile } from "./utils";
-import type { Game, Player, PlayerCollection, Tile, TreeNode } from "./types";
+import { computerMove, createPlayerTiles, flipTile, humanMove } from "./utils";
+import type {
+  Game,
+  Player,
+  PlayerCollection,
+  TreeNode,
+  Move,
+  Tile,
+} from "./types";
 
-import { useLocalStorage } from "./useLocalStorage";
+// import { useLocalStorage } from "./useLocalStorage";
 
 export default function App() {
-  const player1: Player = { id: 1, isHuman: true };
-  let player2: Player = { id: 2, isHuman: false };
+  const player1: Player = { id: 1, isHuman: true, maxWinMove: 9 };
+  let player2: Player = { id: 2, isHuman: false, maxWinMove: 8 };
 
   const [game, setGame] = useState({
     moves: [],
@@ -27,6 +33,7 @@ export default function App() {
       { player: player2, tiles: createPlayerTiles(player2) },
     ],
     tree: null,
+    nextMove: null,
   } as Game);
 
   const [modals, setModals] = useState({
@@ -35,66 +42,89 @@ export default function App() {
     instructions: false,
   });
 
-  function handlePlaceClick(tile: Tile) {
-    let node: TreeNode | null = humanMove(tile);
+  function handlePlaceClick(playerCollection: PlayerCollection, index: number) {
+    const node: TreeNode | null = humanMove(
+      playerCollection.tiles[index],
+      game
+    );
+
     if (node === null) {
+      // node will only be null if the player selected an invalid tile, so error
       setModals({ winner: false, error: true, instructions: false });
       return;
     }
 
-    const currentPlayer =
-      game.moves.length % 2 === 0 ? player1 : game.playerCollections[1].player;
-    const winner: Player | null = saveMove(node, 9, currentPlayer);
+    // `updateStateForAnimation()` will not accept a `TreeNode | null` object so resave it
+    const nextNode: TreeNode = node;
 
-    if (!winner && !game.playerCollections[1].player.isHuman) {
-      // If player 1 didn't win and player 2 is the AI, run the computer's turn
-      runComputerMove(node);
-    }
+    updateStateForAnimation({
+      player: playerCollection.player,
+      node: nextNode,
+    });
   }
 
-  function humanMove(tile: Tile) {
-    let node: TreeNode | undefined;
-
-    if (game.tree === null) {
-      tile.isAvailable = false;
-      node = {
-        tile: tile,
-        children: [],
-        payOff: 0,
-      };
-      // Create the game tree even for human v human for ease of validating moves
-      GameTree(node, game.playerCollections);
-    } else {
-      // Use the previous move to figure out if the selected tile is valid
-      const parent: TreeNode = game.moves[game.moves.length - 1].node;
-      node = parent.children.find((child) => child.tile.id === tile.id);
-      if (node === undefined) {
-        return null;
-      }
-      if (parent.tile.color_2 !== node.tile.color_1) {
-        flipTile(node.tile);
-      }
+  function onAnimationEnd() {
+    const nextMove = game.nextMove;
+    if (nextMove === null) {
+      return;
     }
-    tile.isAvailable = false;
-    return node;
+
+    const winner: Player | null = saveMove(nextMove.node, nextMove.player);
+
+    if (
+      !winner &&
+      !game.playerCollections[1].player.isHuman &&
+      nextMove.player.id === 1
+    ) {
+      // If player 1 didn't win and player 2 is the AI, run the computer's turn
+      runComputerMove(nextMove.node);
+    }
   }
 
   function runComputerMove(node: TreeNode) {
     const computerNode: TreeNode = computerMove(node, game.type);
+
     if (node.tile.color_2 !== computerNode.tile.color_1) {
       flipTile(computerNode.tile);
     }
-    computerNode.tile.isAvailable = false;
-    saveMove(computerNode, 8, game.playerCollections[1].player);
+
+    updateStateForAnimation({
+      player: game.playerCollections[1].player,
+      node: computerNode,
+    });
   }
 
-  function saveMove(node: TreeNode, maxMoves: number, player: Player) {
+  function updateStateForAnimation(move: Move) {
+    setGame((prev: Game) => {
+      const gameClone = structuredClone(prev);
+      gameClone.nextMove = move;
+      return gameClone;
+    });
+  }
+
+  function updateTileInCollection(tiles: Tile[], tileId: string) {
+    for (let tile of tiles) {
+      if (tile.id === tileId) {
+        tile.isAvailable = false;
+        break;
+      }
+    }
+  }
+
+  function saveMove(node: TreeNode, player: Player) {
     const isComplete: boolean = node.children.length === 0;
     const winner: Player | null =
-      game.moves.length < maxMoves && isComplete ? player : null;
+      game.moves.length < player.maxWinMove && isComplete ? player : null;
 
     const root = game.tree !== null ? game.tree : node;
     const tiles = game.playerCollections[player.id - 1].tiles;
+    for (let tile of tiles) {
+      if (tile.id === node.tile.id) {
+        tile.isAvailable = false;
+        break;
+      }
+    }
+
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
 
@@ -103,6 +133,7 @@ export default function App() {
       gameClone.status.isComplete = isComplete;
       gameClone.status.winner = winner;
       gameClone.playerCollections[player.id - 1].tiles = [...tiles];
+      gameClone.nextMove = null;
 
       return gameClone;
     });
@@ -115,8 +146,7 @@ export default function App() {
   }
 
   function resetGame(gameType: Game["type"]) {
-    let newPlayer2 = { ...player2 };
-    newPlayer2.isHuman = gameType === "human";
+    player2.isHuman = gameType === "human";
 
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
@@ -126,11 +156,12 @@ export default function App() {
       gameClone.type = gameType;
       gameClone.playerCollections[0].tiles = createPlayerTiles(player1);
       gameClone.playerCollections[1] = {
-        player: newPlayer2,
-        tiles: createPlayerTiles(newPlayer2),
+        player: player2,
+        tiles: createPlayerTiles(player2),
       };
       gameClone.status.isComplete = false;
       gameClone.status.winner = null;
+      gameClone.nextMove = null;
 
       return gameClone;
     });
@@ -170,7 +201,11 @@ export default function App() {
               isPlayable={
                 !game.status.isComplete && game.moves.length % 2 === 0
               }
-              onPlaceClick={(tile) => handlePlaceClick(tile)}
+              onAnimationEnd={() => onAnimationEnd()}
+              animatingTileId={game.nextMove?.node.tile.id || ""}
+              onPlaceClick={(collection, index) =>
+                handlePlaceClick(collection, index)
+              }
               onFlipClick={(collection, index) =>
                 handleFlipClick(collection, index)
               }
@@ -183,7 +218,11 @@ export default function App() {
               isPlayable={
                 !game.status.isComplete && game.moves.length % 2 !== 0
               }
-              onPlaceClick={(tile) => handlePlaceClick(tile)}
+              animatingTileId={game.nextMove?.node.tile.id || ""}
+              onAnimationEnd={onAnimationEnd}
+              onPlaceClick={(collection, index) =>
+                handlePlaceClick(collection, index)
+              }
               onFlipClick={(collection, index) =>
                 handleFlipClick(collection, index)
               }

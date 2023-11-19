@@ -1,4 +1,5 @@
-import type { Player, Tile, TreeNode } from "./types";
+import type { Game, Player, Tile, TreeNode } from "./types";
+import GameTree from "./GameTree";
 
 export function createPlayerTiles(player: Player) {
   const numTiles: number = 5;
@@ -71,6 +72,32 @@ export function flipTile(tile: Tile) {
   tile.color_2 = tempColor;
 }
 
+export function humanMove(tile: Tile, game: Game): TreeNode | null {
+  let node: TreeNode | undefined;
+
+  if (game.tree === null) {
+    tile.isAvailable = false;
+    node = {
+      tile: tile,
+      children: [],
+      payOff: 0,
+    };
+    // Create the game tree even for human v human for ease of validating moves
+    GameTree(node, game.playerCollections);
+  } else {
+    // Use the previous move to figure out if the selected tile is valid
+    const parent: TreeNode = game.moves[game.moves.length - 1].node;
+    node = parent.children.find((child) => child.tile.id === tile.id);
+    if (node === undefined) {
+      return null;
+    }
+    if (parent.tile.color_2 !== node.tile.color_1) {
+      flipTile(node.tile);
+    }
+  }
+  return node;
+}
+
 export function computerMove(node: TreeNode, difficulty: string) {
   let childrenByPay: Map<number, TreeNode> = new Map();
   for (let child of node.children) {
@@ -90,6 +117,5 @@ export function computerMove(node: TreeNode, difficulty: string) {
       a[0] > b[0] ? a : b
     )[1];
   }
-  nextNode.tile.isAvailable = false;
   return nextNode;
 }

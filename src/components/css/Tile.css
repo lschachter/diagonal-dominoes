@@ -8,6 +8,20 @@
   top: 0;
   background-color: rgba(0, 0, 0, 0.6);
   margin: 5px 0px;
+  position: absolute;
+}
+
+.tileContainer {
+  position: relative;
+  min-height: 60px;
+}
+
+.player1Animation {
+  animation: player1TileAnimation 1s forwards;
+}
+
+.player2Animation {
+  animation: player2TileAnimation 1s forwards;
 }
 
 .tile div {
@@ -45,4 +59,26 @@
 
 .green {
   background-color: var(--green);
+}
+
+@keyframes player1TileAnimation {
+  0% {
+    left: 0px;
+    top: 0px;
+  }
+  100% {
+    left: 200px;
+    top: 100px;
+  }
+}
+
+@keyframes player2TileAnimation {
+  0% {
+    left: 0px;
+    top: 0px;
+  }
+  100% {
+    left: -200px;
+    top: 100px;
+  }
 }

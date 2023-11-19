@@ -1,6 +1,7 @@
 export type Player = {
   id: 1 | 2;
   isHuman: boolean;
+  maxWinMove: 8 | 9;
 };
 
 export type Tile = {
@@ -37,4 +38,5 @@ export type Game = {
   type: "easy" | "difficult" | "human";
   playerCollections: PlayerCollection[];
   tree: TreeNode | null;
+  nextMove: Move | null;
 };
