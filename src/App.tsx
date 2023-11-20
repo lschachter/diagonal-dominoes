@@ -63,13 +63,41 @@ export default function App() {
     });
   }
 
+  function updateStateForAnimation(move: Move) {
+    const tiles = game.playerCollections[move.player.id - 1].tiles;
+    updateTileInCollection(tiles, move.node.tile.id);
+
+    setGame((prev: Game) => {
+      const gameClone = structuredClone(prev);
+      gameClone.nextMove = move;
+      gameClone.playerCollections[move.player.id - 1].tiles = [...tiles];
+
+      return gameClone;
+    });
+  }
+
+  function updateTileInCollection(tiles: Tile[], tileId: string) {
+    for (let tile of tiles) {
+      if (tile.id === tileId) {
+        tile.isAvailable = false;
+        if (
+          game.moves.length > 0 &&
+          tile.color_1 !== game.moves.at(-1)?.node.tile.color_2
+        ) {
+          flipTile(tile);
+        }
+        break;
+      }
+    }
+  }
+
   function onAnimationEnd() {
     const nextMove = game.nextMove;
     if (nextMove === null) {
       return;
     }
 
-    const winner: Player | null = saveMove(nextMove.node, nextMove.player);
+    const winner: Player | null = saveMove(nextMove);
 
     if (
       !winner &&
@@ -84,55 +112,34 @@ export default function App() {
   function runComputerMove(node: TreeNode) {
     const computerNode: TreeNode = computerMove(node, game.type);
 
-    if (node.tile.color_2 !== computerNode.tile.color_1) {
-      flipTile(computerNode.tile);
-    }
-
     updateStateForAnimation({
       player: game.playerCollections[1].player,
       node: computerNode,
     });
-  }
 
-  function updateStateForAnimation(move: Move) {
-    setGame((prev: Game) => {
-      const gameClone = structuredClone(prev);
-      gameClone.nextMove = move;
-      return gameClone;
-    });
-  }
-
-  function updateTileInCollection(tiles: Tile[], tileId: string) {
-    for (let tile of tiles) {
-      if (tile.id === tileId) {
-        tile.isAvailable = false;
-        break;
-      }
+    if (node.tile.color_2 !== computerNode.tile.color_1) {
+      flipTile(computerNode.tile);
     }
   }
 
-  function saveMove(node: TreeNode, player: Player) {
-    const isComplete: boolean = node.children.length === 0;
+  function saveMove(move: Move) {
+    const isComplete: boolean = move.node.children.length === 0;
     const winner: Player | null =
-      game.moves.length < player.maxWinMove && isComplete ? player : null;
+      game.moves.length < move.player.maxWinMove && isComplete
+        ? move.player
+        : null;
 
-    const root = game.tree !== null ? game.tree : node;
-    const tiles = game.playerCollections[player.id - 1].tiles;
-    for (let tile of tiles) {
-      if (tile.id === node.tile.id) {
-        tile.isAvailable = false;
-        break;
-      }
-    }
+    const root = game.tree !== null ? game.tree : move.node;
+    const tiles = game.playerCollections[move.player.id - 1].tiles;
 
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
 
       gameClone.tree = root;
-      gameClone.moves.push({ player, node });
+      gameClone.moves.push(move);
       gameClone.status.isComplete = isComplete;
       gameClone.status.winner = winner;
-      gameClone.playerCollections[player.id - 1].tiles = [...tiles];
+      gameClone.playerCollections[move.player.id - 1].tiles = [...tiles];
       gameClone.nextMove = null;
 
       return gameClone;
