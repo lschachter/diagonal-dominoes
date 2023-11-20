@@ -117,5 +117,8 @@ export function computerMove(node: TreeNode, difficulty: string) {
       a[0] > b[0] ? a : b
     )[1];
   }
+  if (node.tile.color_2 !== nextNode.tile.color_1) {
+    flipTile(nextNode.tile);
+  }
   return nextNode;
 }

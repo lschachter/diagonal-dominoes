@@ -116,21 +116,15 @@ export default function App() {
       player: game.playerCollections[1].player,
       node: computerNode,
     });
-
-    if (node.tile.color_2 !== computerNode.tile.color_1) {
-      flipTile(computerNode.tile);
-    }
   }
 
   function saveMove(move: Move) {
+    const root = game.tree !== null ? game.tree : move.node;
     const isComplete: boolean = move.node.children.length === 0;
     const winner: Player | null =
       game.moves.length < move.player.maxWinMove && isComplete
         ? move.player
         : null;
-
-    const root = game.tree !== null ? game.tree : move.node;
-    const tiles = game.playerCollections[move.player.id - 1].tiles;
 
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
@@ -139,7 +133,6 @@ export default function App() {
       gameClone.moves.push(move);
       gameClone.status.isComplete = isComplete;
       gameClone.status.winner = winner;
-      gameClone.playerCollections[move.player.id - 1].tiles = [...tiles];
       gameClone.nextMove = null;
 
       return gameClone;
