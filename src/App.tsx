@@ -27,7 +27,7 @@ export default function App() {
   const [game, setGame] = useState({
     moves: [],
     status: { isComplete: false, winner: null },
-    type: "easy",
+    type: "Hard",
     playerCollections: [
       { player: player1, tiles: createPlayerTiles(player1) },
       { player: player2, tiles: createPlayerTiles(player2) },
@@ -146,7 +146,7 @@ export default function App() {
   }
 
   function resetGame(gameType: Game["type"]) {
-    player2.isHuman = gameType === "human";
+    player2.isHuman = gameType === "Human v Human";
 
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);

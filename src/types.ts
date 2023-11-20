@@ -35,7 +35,7 @@ export type GameStatus = {
 export type Game = {
   moves: Move[];
   status: GameStatus;
-  type: "easy" | "difficult" | "human";
+  type: "Easy" | "Hard" | "Human v Human";
   playerCollections: PlayerCollection[];
   tree: TreeNode | null;
   nextMove: Move | null;

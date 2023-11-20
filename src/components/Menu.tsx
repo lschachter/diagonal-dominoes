@@ -11,7 +11,7 @@ type Props = {
 export default function Menu({ resetGame, onInstructionsClick }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  function handleGameReset(difficulty: "easy" | "difficult" | "human") {
+  function handleGameReset(difficulty: Game["type"]) {
     setMenuOpen(false);
     resetGame(difficulty);
   }
@@ -39,19 +39,16 @@ export default function Menu({ resetGame, onInstructionsClick }: Props) {
 
       {menuOpen && (
         <div className="items">
-          <button className="clickable" onClick={() => handleGameReset("easy")}>
+          <button className="clickable" onClick={() => handleGameReset("Easy")}>
             Easy
           </button>
-          <button
-            className="clickable"
-            onClick={() => handleGameReset("difficult")}
-          >
+          <button className="clickable" onClick={() => handleGameReset("Hard")}>
             Hard
           </button>
           <br />
           <button
             className="clickable"
-            onClick={() => handleGameReset("human")}
+            onClick={() => handleGameReset("Human v Human")}
           >
             Human v Human
           </button>

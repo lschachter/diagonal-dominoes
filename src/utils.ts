@@ -106,7 +106,7 @@ export function computerMove(node: TreeNode, difficulty: string) {
 
   let nextNode: TreeNode;
 
-  if (difficulty === "easy") {
+  if (difficulty === "Easy") {
     // If the AI is easy, pick the worst move
     nextNode = [...childrenByPay.entries()].reduce((a, b) =>
       a[0] < b[0] ? a : b
