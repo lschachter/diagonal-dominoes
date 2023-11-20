@@ -4,8 +4,6 @@
   align-items: center;
   width: 122px;
   height: 60px;
-  left: 0;
-  top: 0;
   background-color: rgba(0, 0, 0, 0.6);
   margin: 5px 0px;
   position: absolute;
@@ -13,7 +11,8 @@
 
 .tileContainer {
   position: relative;
-  min-height: 60px;
+  min-height: 80px;
+  min-width: 122px;
 }
 
 .player1Animation {
@@ -72,14 +71,23 @@
   }
 }
 
+/* SMALLER SCREEN */
+
 @media (max-width: 950px) {
   .tile {
     width: 102px;
     height: 50px;
+    margin: 0px;
   }
 
   .tile div {
     margin: 2px;
+  }
+
+  .tileContainer {
+    position: relative;
+    min-height: 60px;
+    min-width: 102px;
   }
 
   @keyframes player1TileAnimation {
