@@ -57,15 +57,18 @@ export default function App() {
     // `updateStateForAnimation()` will not accept a `TreeNode | null` object so resave it
     const nextNode: TreeNode = node;
 
-    updateStateForAnimation({
-      player: playerCollection.player,
-      node: nextNode,
-    });
+    updateStateForAnimation(
+      {
+        player: playerCollection.player,
+        node: nextNode,
+      },
+      game.moves.at(-1)
+    );
   }
 
-  function updateStateForAnimation(move: Move) {
+  function updateStateForAnimation(move: Move, prevMove: Move | undefined) {
     const tiles = game.playerCollections[move.player.id - 1].tiles;
-    updateTileInCollection(tiles, move.node.tile.id);
+    updateTileInCollection(tiles, move.node.tile.id, prevMove);
 
     setGame((prev: Game) => {
       const gameClone = structuredClone(prev);
@@ -76,15 +79,19 @@ export default function App() {
     });
   }
 
-  function updateTileInCollection(tiles: Tile[], tileId: string) {
-    for (let tile of tiles) {
+  function updateTileInCollection(
+    tiles: Tile[],
+    tileId: string,
+    prevMove: Move | undefined
+  ) {
+    for (let [i, tile] of tiles.entries()) {
       if (tile.id === tileId) {
         tile.isAvailable = false;
         if (
-          game.moves.length > 0 &&
-          tile.color_1 !== game.moves.at(-1)?.node.tile.color_2
+          prevMove !== undefined &&
+          tile.color_1 !== prevMove?.node.tile.color_2
         ) {
-          flipTile(tile);
+          flipTile(tiles[i]);
         }
         break;
       }
@@ -105,17 +112,20 @@ export default function App() {
       nextMove.player.id === 1
     ) {
       // If player 1 didn't win and player 2 is the AI, run the computer's turn
-      runComputerMove(nextMove.node);
+      runComputerMove(nextMove);
     }
   }
 
-  function runComputerMove(node: TreeNode) {
-    const computerNode: TreeNode = computerMove(node, game.type);
+  function runComputerMove(prevMove: Move) {
+    const computerNode: TreeNode = computerMove(prevMove.node, game.type);
 
-    updateStateForAnimation({
-      player: game.playerCollections[1].player,
-      node: computerNode,
-    });
+    updateStateForAnimation(
+      {
+        player: game.playerCollections[1].player,
+        node: computerNode,
+      },
+      prevMove
+    );
   }
 
   function saveMove(move: Move) {
